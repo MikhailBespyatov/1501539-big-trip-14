@@ -7,6 +7,7 @@ import { createListItemTemplate } from './view/waypoint.js';
 import { createCostTemplate } from './view/cost.js';
 import { waypoints } from './mock/generate-waypoint.js';
 
+
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };

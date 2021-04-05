@@ -1,3 +1,4 @@
+
 import { calculateDifferenceInTime } from '../mock/generate-waypoint.js';
 export const createListItemTemplate = (object) => {
   return `<li class="trip-events__item">
