@@ -5,6 +5,8 @@ import { createSortTemplate } from './view/sort.js';
 import { createEditFormTemplate } from './view/edit-form.js';
 import { createListItemTemplate } from './view/waypoint.js';
 import { createCostTemplate } from './view/cost.js';
+import { waypoints } from './mock/generate-waypoint.js';
+
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -38,7 +40,8 @@ siteMainEventList.classList.add('trip-events__list');
 
 siteMainEventsElement.appendChild(siteMainEventList);
 
-render(siteMainEventList, createEditFormTemplate(), 'afterbegin');
-render(siteMainEventList, createListItemTemplate(), 'beforeend');
-render(siteMainEventList, createListItemTemplate(), 'beforeend');
-render(siteMainEventList, createListItemTemplate(), 'beforeend');
+render(siteMainEventList, createEditFormTemplate(waypoints[0]), 'afterbegin');
+
+for (let i = 1; i < waypoints.length; i++) {
+  render(siteMainEventList, createListItemTemplate(waypoints[i]), 'beforeend');
+}
