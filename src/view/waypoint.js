@@ -1,9 +1,10 @@
-
 import { calculateDifferenceInTime } from '../mock/generate-waypoint.js';
-export const createListItemTemplate = (object) => {
+import { createElement } from '../mock/util.js';
+
+const createListItemTemplate = (object) => {
   return `<li class="trip-events__item">
   <div class="event">
-    <time class="event__date" datetime="2019-03-18">MAR 18</time>
+    <time class="event__date" datetime="2019-03-18">${object.dateItem}</time>
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
     </div>
@@ -21,11 +22,11 @@ export const createListItemTemplate = (object) => {
     </p>
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-      <li class="event__offer">
-        <span class="event__offer-title">Order Uber</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${object.orderPrice}</span>
-      </li>
+      ${object.offers.map((offer) => `<li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </li>`).join('')}
     </ul>
     <button class="event__favorite-btn ${object.isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
       <span class="visually-hidden">Add to favorite</span>
@@ -39,3 +40,26 @@ export const createListItemTemplate = (object) => {
   </div>
 </li>`;
 };
+
+export default class ListItem {
+  constructor(datalist) {
+    this._datalist = datalist;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createListItemTemplate(this._datalist);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,5 +1,7 @@
-export const createEditFormTemplate = (object) => {
-  return `  <li class="trip-events__item">
+import { createElement } from '../mock/util.js';
+
+const createEditFormTemplate = (datalist) => {
+  return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
@@ -68,9 +70,9 @@ export const createEditFormTemplate = (object) => {
 
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-          ${object.type}
+          ${datalist.type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${object.title}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${datalist.title}" list="destination-list-1">
         <datalist id="destination-list-1">
           <option value="Amsterdam"></option>
           <option value="Geneva"></option>
@@ -80,10 +82,10 @@ export const createEditFormTemplate = (object) => {
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${object.dateFrom}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${datalist.dateEdit} ${datalist.startTime.visibleTime}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${object.dateTo}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${datalist.dateEdit} ${datalist.endTime.visibleTime}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -91,7 +93,7 @@ export const createEditFormTemplate = (object) => {
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${object.basePrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${datalist.basePrice}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -102,7 +104,7 @@ export const createEditFormTemplate = (object) => {
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
-          ${object.offers.map((offer) => `<div class="event__offer-selector">
+          ${datalist.offers.map((offer) => `<div class="event__offer-selector">
           <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}-1" type="checkbox" name="event-offer-luggage">
           <label class="event__offer-label" for="event-offer-${offer.id}-1">
             <span class="event__offer-title">${offer.title}</span>
@@ -115,11 +117,11 @@ export const createEditFormTemplate = (object) => {
 
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${object.destinations.map((element) => element).join(' ')}</p>
+        <p class="event__destination-description">${datalist.destinations.map((element) => element).join(' ')}</p>
 
         <div class="event__photos-container">
           <div class="event__photos-tape">
-          ${object.photos.map((element) => `<img class="event__photo" src="img/photos/${element}.jpg" alt="Event photo">`).join('')}
+          ${datalist.photos.map((element) => `<img class="event__photo" src="img/photos/${element}.jpg" alt="Event photo">`).join('')}
           </div>
         </div>
       </section>
@@ -127,3 +129,26 @@ export const createEditFormTemplate = (object) => {
   </form>
 </li>`;
 };
+
+export default class EditForm {
+  constructor(datalist) {
+    this._datalist = datalist;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditFormTemplate(this._datalist);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
