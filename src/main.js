@@ -4,7 +4,50 @@ import RouteView from './view/route.js';
 import CostView from './view/cost.js';
 import FiltersView from './view/filter.js';
 import SortView from './view/sort.js';
-import { render, RenderPosition, renderWaypoint } from './mock/util.js';
+import NoWaypointView from './view/no-waypoint.js';
+import EditFormView from './view/edit-form.js';
+import ListItemView from './view/waypoint.js';
+import { render, RenderPosition } from './mock/util.js';
+
+const renderWaypoint = (container, datalist) => {
+  const waypointComponent = new ListItemView(datalist);
+  const waypointEditComponent = new EditFormView(datalist);
+
+  const replaceItemToEdit = () => {
+    container.replaceChild(waypointEditComponent.getElement(), waypointComponent.getElement());
+  };
+
+  const replaceEditToItem = () => {
+    container.replaceChild(waypointComponent.getElement(), waypointEditComponent.getElement());
+  };
+
+  const onEscKeydown = (evt) => {
+    if (evt.key === 'Esc' || evt.key === 'Escape') {
+      evt.preventDefault();
+      replaceEditToItem();
+      document.removeEventListener('keydown', onEscKeydown);
+    }
+  };
+
+  waypointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceItemToEdit();
+    document.addEventListener('keydown', onEscKeydown);
+  });
+
+  waypointEditComponent.getElement().querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceEditToItem();
+    document.removeEventListener('keydown', onEscKeydown);
+  });
+
+  waypointEditComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceEditToItem();
+    document.removeEventListener('keydown', onEscKeydown);
+  });
+
+  render(container, waypointComponent.getElement(), RenderPosition.BEFOREEND);
+};
+
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteHeaderMenuElement = siteHeaderElement.querySelector('.trip-controls__navigation');
@@ -33,8 +76,11 @@ const siteMainEventList = document.createElement('ul');
 siteMainEventList.classList.add('trip-events__list');
 siteMainEventsElement.appendChild(siteMainEventList);
 
-for (let i = 0; i < waypoints.length; i++) {
-  renderWaypoint(siteMainEventList, waypoints[i]);
+if (waypoints.length === 0) {
+  siteMainElement.innerHTML = '';
+  render(siteMainElement, new NoWaypointView().getElement(), RenderPosition.BEFOREEND);
+} else {
+  waypoints.map((element) => renderWaypoint(siteMainEventList, element));
 }
 
 const futureButton = document.querySelector('#filter-future');
