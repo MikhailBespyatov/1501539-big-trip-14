@@ -6,7 +6,7 @@ export const getRandomInteger = (a = 0, b = 1) => {
 };
 
 export const getRandomIndex = (array) => {
-  return getRandomInteger(0, array.length -1);
+  return getRandomInteger(0, array.length - 1);
 };
 
 export const getRandomItem = (array) => array[getRandomInteger(0, array.length - 1)];
@@ -27,4 +27,43 @@ export const shuffle = (array) => {
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
+};
+
+export const sumBasePrice = (array) => {
+  let sum = 0;
+  array.map((element) => {
+    sum = sum + element.basePrice;
+  });
+  return sum;
+};
+
+export const sumArray = (array) => {
+  let sum = 0;
+  array.map((element) => {
+    sum = sum + element;
+  });
+  return sum;
+};
+
+export const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+};
+
+export const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
 };

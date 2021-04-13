@@ -10,10 +10,6 @@ const generateTitle = () => {
   return TITLES[getRandomIndex(TITLES)];
 };
 
-const generateDate = () => {
-  return dayjs().format('MM/DD/YY HH:mm');
-};
-
 const generateStartTime = () => {
   const time = dayjs().add(getRandomInteger(0, 11), 'h').add(getRandomInteger(1, 59), 'm');
 
@@ -30,6 +26,20 @@ const generateEndTime = () => {
     dataTime: time.format('YYYY-MM-DDTHH:mm'),
     visibleTime: time.format('HH:mm'),
   };
+};
+
+const generateDay = () => {
+  const dayGap = 7;
+  const time = dayjs().add(getRandomInteger(-dayGap, dayGap), 'd');
+  return time;
+};
+
+const isPast = (day) => {
+  return dayjs().isAfter(day, 'd');
+};
+
+const isFuture = (day) => {
+  return dayjs().isBefore(day, 'd');
 };
 
 export const calculateDifferenceInTime = (firstDate, secondDate) => {
@@ -50,21 +60,31 @@ export const calculateDifferenceInTime = (firstDate, secondDate) => {
 };
 
 export const generateWaypoint = () => {
+  const day = generateDay();
+
   return {
     type: generatePointType(),
     title: generateTitle(),
-    date: 1,
-    dateFrom: generateDate(),
-    dateTo: generateDate(),
+    dateItem: day.format('MMMM D'),
+    dateEdit: day.format('DD/MM/YY'),
     basePrice: getRandomInteger(200, 1000),
-    orderPrice: getRandomInteger(1, 200),
     offers: getRandomArray(OFFERS),
-    destinations: shuffle(DESTINATION_DESCRIPTIONS).slice(getRandomInteger(5, 9)),
+    destinations: shuffle(DESTINATION_DESCRIPTIONS).slice(getRandomInteger(5, 10)),
     photos: shuffle(PHOTOS).slice(getRandomInteger(0, 4)),
     startTime: generateStartTime(),
     endTime: generateEndTime(),
     isFavorite: Boolean(getRandomInteger()),
+    isPast: isPast(day),
+    isFuture: isFuture(day),
   };
 };
 
 export const waypoints = new Array(10).fill().map(() => generateWaypoint());
+
+export const offersTotalCost = waypoints.slice(0).map((element) => {
+  let sum = 0;
+  element.offers.map((el) => {
+    sum = sum + el.price;
+  });
+  return sum;
+});
