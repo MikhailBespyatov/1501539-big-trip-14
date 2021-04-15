@@ -1,4 +1,4 @@
-import { createElement } from '../mock/util.js';
+import AbstractView from './abstract.js';
 
 const createEditFormTemplate = (datalist) => {
   return `<li class="trip-events__item">
@@ -133,25 +133,35 @@ const createEditFormTemplate = (datalist) => {
 </li>`;
 };
 
-export default class EditForm {
+export default class EditForm extends AbstractView {
   constructor(datalist) {
+    super();
     this._datalist = datalist;
-    this._element = null;
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._rollupClickHandler = this._rollupClickHandler.bind(this);
   }
 
   getTemplate() {
     return createEditFormTemplate(this._datalist);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
   }
 
-  removeElement() {
-    this._element = null;
+  _rollupClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.rollupClick();
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
+  }
+
+  setRollupClickHandler(callback) {
+    this._callback.rollupClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._rollupClickHandler);
   }
 }

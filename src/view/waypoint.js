@@ -1,5 +1,5 @@
-import { calculateDifferenceInTime } from '../mock/generate-waypoint.js';
-import { createElement } from '../mock/util.js';
+import { calculateDifferenceInTime } from '../util/common.js';
+import AbstractView from './abstract.js';
 
 const createListItemTemplate = (object) => {
   return `<li class="trip-events__item">
@@ -41,25 +41,24 @@ const createListItemTemplate = (object) => {
 </li>`;
 };
 
-export default class ListItem {
+export default class ListItem extends AbstractView {
   constructor(datalist) {
+    super();
     this._datalist = datalist;
-    this._element = null;
+    this._rollupClickHandler = this._rollupClickHandler.bind(this);
   }
 
   getTemplate() {
     return createListItemTemplate(this._datalist);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _rollupClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.rollupClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setRollupClickHandler(callback) {
+    this._callback.rollupClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._rollupClickHandler);
   }
 }
