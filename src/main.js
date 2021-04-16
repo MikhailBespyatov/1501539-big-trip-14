@@ -1,4 +1,4 @@
-import { waypoints, offersTotalCost } from './mock/generate-waypoint.js';
+import MainEventListView from './view/main-event-list.js';
 import SiteMenuView from './view/site-menu.js';
 import RouteView from './view/route.js';
 import CostView from './view/cost.js';
@@ -7,18 +7,20 @@ import SortView from './view/sort.js';
 import NoWaypointView from './view/no-waypoint.js';
 import EditFormView from './view/edit-form.js';
 import ListItemView from './view/waypoint.js';
-import { render, RenderPosition } from './mock/util.js';
+import RouteAndConstContainerView from './view/route-and-cost-container.js';
+import { render, RenderPosition, replace } from './util/render.js';
+import { waypoints, offersTotalCost } from './mock/generate-waypoint.js';
 
 const renderWaypoint = (container, datalist) => {
   const waypointComponent = new ListItemView(datalist);
   const waypointEditComponent = new EditFormView(datalist);
 
   const replaceItemToEdit = () => {
-    container.replaceChild(waypointEditComponent.getElement(), waypointComponent.getElement());
+    replace(waypointEditComponent, waypointComponent);
   };
 
   const replaceEditToItem = () => {
-    container.replaceChild(waypointComponent.getElement(), waypointEditComponent.getElement());
+    replace(waypointComponent, waypointEditComponent);
   };
 
   const onEscKeydown = (evt) => {
@@ -29,39 +31,36 @@ const renderWaypoint = (container, datalist) => {
     }
   };
 
-  waypointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+  waypointComponent.setRollupClickHandler(() => {
     replaceItemToEdit();
     document.addEventListener('keydown', onEscKeydown);
   });
 
-  waypointEditComponent.getElement().querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
+  waypointEditComponent.setFormSubmitHandler(() => {
     replaceEditToItem();
     document.removeEventListener('keydown', onEscKeydown);
   });
 
-  waypointEditComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+  waypointEditComponent.setRollupClickHandler(() => {
     replaceEditToItem();
     document.removeEventListener('keydown', onEscKeydown);
   });
 
-  render(container, waypointComponent.getElement(), RenderPosition.BEFOREEND);
+  render(container, waypointComponent, RenderPosition.BEFOREEND);
 };
 
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteHeaderMenuElement = siteHeaderElement.querySelector('.trip-controls__navigation');
 
-render(siteHeaderMenuElement, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
+render(siteHeaderMenuElement, new SiteMenuView(), RenderPosition.BEFOREEND);
 
-const siteHeaderControls = siteHeaderElement.querySelector('.trip-main__trip-controls');
 const siteHeaderConteiner = siteHeaderElement.querySelector('.trip-main');
-const siteHeaderRouteAndCostElement = document.createElement('section');
-siteHeaderRouteAndCostElement.classList.add('trip-main__trip-info', 'trip-info');
-siteHeaderConteiner.insertBefore(siteHeaderRouteAndCostElement, siteHeaderControls);
+const siteHeaderRouteAndCostElement = new RouteAndConstContainerView().getElement();
 
-render(siteHeaderRouteAndCostElement, new RouteView().getElement(), RenderPosition.BEFOREEND);
-render(siteHeaderRouteAndCostElement, new CostView(waypoints, offersTotalCost).getElement(), RenderPosition.BEFOREEND);
+render(siteHeaderConteiner, siteHeaderRouteAndCostElement, RenderPosition.AFTERBEGIN);
+render(siteHeaderRouteAndCostElement, new RouteView(), RenderPosition.BEFOREEND);
+render(siteHeaderRouteAndCostElement, new CostView(waypoints, offersTotalCost), RenderPosition.BEFOREEND);
 
 const siteHeaderFiltersElement = siteHeaderElement.querySelector('.trip-controls__filters');
 
@@ -70,15 +69,15 @@ render(siteHeaderFiltersElement, new FiltersView().getElement(), RenderPosition.
 const siteMainElement = document.querySelector('.page-main');
 const siteMainEventsElement = siteMainElement.querySelector('.trip-events');
 
-render(siteMainEventsElement, new SortView().getElement(), RenderPosition.BEFOREEND);
+render(siteMainEventsElement, new SortView(), RenderPosition.BEFOREEND);
 
-const siteMainEventList = document.createElement('ul');
-siteMainEventList.classList.add('trip-events__list');
-siteMainEventsElement.appendChild(siteMainEventList);
+const siteMainEventList = new MainEventListView().getElement();
+
+render(siteMainEventsElement, siteMainEventList, RenderPosition.BEFOREEND);
 
 if (waypoints.length === 0) {
   siteMainElement.innerHTML = '';
-  render(siteMainElement, new NoWaypointView().getElement(), RenderPosition.BEFOREEND);
+  render(siteMainElement, new NoWaypointView(), RenderPosition.BEFOREEND);
 } else {
   waypoints.map((element) => renderWaypoint(siteMainEventList, element));
 }
