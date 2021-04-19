@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { getRandomInteger, getRandomArray, shuffle } from '../util/common.js';
 import { OFFERS, DESTINATION_DESCRIPTIONS, PHOTOS } from './constant.js';
 import {
@@ -5,12 +6,13 @@ import {
   generateDay, isPast, isFuture
 } from '../util/waypoint.js';
 
-const WAYPOINT_COUNT = 22;
+const WAYPOINT_COUNT = 2;
 
 export const generateWaypoint = () => {
   const day = generateDay();
 
   return {
+    id: nanoid(),
     type: generatePointType(),
     title: generateTitle(),
     dateItem: day.format('MMMM D'),
