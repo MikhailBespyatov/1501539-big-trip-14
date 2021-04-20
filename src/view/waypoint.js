@@ -1,34 +1,36 @@
 import { calculateDifferenceInTime } from '../util/common.js';
 import AbstractView from './abstract.js';
 
-const createListItemTemplate = (object) => {
+const createWaypointTemplate = (object) => {
+  const {dateItem, type, title, startTime, endTime, basePrice, offers, isFavorite} = object;
+
   return `<li class="trip-events__item">
   <div class="event">
-    <time class="event__date" datetime="2019-03-18">${object.dateItem}</time>
+    <time class="event__date" datetime="2019-03-18">${dateItem}</time>
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${object.type} ${object.title}</h3>
+    <h3 class="event__title">${type} ${title}</h3>
     <div class="event__schedule">
       <p class="event__time">
-        <time class="event__start-time" datetime="${object.startTime.dataTime}">${object.startTime.visibleTime}</time>
+        <time class="event__start-time" datetime="${startTime.dataTime}">${startTime.visibleTime}</time>
         &mdash;
-        <time class="event__end-time" datetime="${object.endTime.dataTime}">${object.endTime.visibleTime}</time>
+        <time class="event__end-time" datetime="${endTime.dataTime}">${endTime.visibleTime}</time>
       </p>
-      <p class="event__duration">${calculateDifferenceInTime(object.startTime.visibleTime, object.endTime.visibleTime)}H</p>
+      <p class="event__duration">${calculateDifferenceInTime(startTime.visibleTime, endTime.visibleTime)}H</p>
     </div>
     <p class="event__price">
-      &euro;&nbsp;<span class="event__price-value">${object.basePrice}</span>
+      &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
     </p>
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-      ${object.offers.map((offer) => `<li class="event__offer">
+      ${offers.map((offer) => `<li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${offer.price}</span>
     </li>`).join('')}
     </ul>
-    <button class="event__favorite-btn ${object.isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
+    <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
       <span class="visually-hidden">Add to favorite</span>
       <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
         <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -41,15 +43,16 @@ const createListItemTemplate = (object) => {
 </li>`;
 };
 
-export default class ListItem extends AbstractView {
+export default class Waypoint extends AbstractView {
   constructor(datalist) {
     super();
     this._datalist = datalist;
     this._rollupClickHandler = this._rollupClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createListItemTemplate(this._datalist);
+    return createWaypointTemplate(this._datalist);
   }
 
   _rollupClickHandler(evt) {
@@ -57,8 +60,18 @@ export default class ListItem extends AbstractView {
     this._callback.rollupClick();
   }
 
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
   setRollupClickHandler(callback) {
     this._callback.rollupClick = callback;
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._rollupClickHandler);
+  }
+
+  setFavoriteClick(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector('.event__favorite-icon').addEventListener('click', this._favoriteClickHandler);
   }
 }
