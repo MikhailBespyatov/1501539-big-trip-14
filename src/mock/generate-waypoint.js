@@ -1,16 +1,18 @@
+import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
-import { getRandomInteger, getRandomArray, shuffle } from '../util/common.js';
+import { getRandomInteger, getRandomArray, shuffle, msToTime } from '../util/common.js';
 import { OFFERS, DESTINATION_DESCRIPTIONS, PHOTOS } from './constant.js';
 import {
   generatePointType, generateTitle, generateStartTime, generateEndTime,
   generateDay, isPast, isFuture
 } from '../util/waypoint.js';
 
-const WAYPOINT_COUNT = 2;
+const WAYPOINT_COUNT = 10;
 
 export const generateWaypoint = () => {
   const day = generateDay();
-
+  const startTime = generateStartTime();
+  const endTime = generateEndTime();
   return {
     id: nanoid(),
     type: generatePointType(),
@@ -21,8 +23,10 @@ export const generateWaypoint = () => {
     offers: getRandomArray(OFFERS),
     destinations: shuffle(DESTINATION_DESCRIPTIONS).slice(getRandomInteger(5, 10)),
     photos: shuffle(PHOTOS).slice(getRandomInteger(0, 4)),
-    startTime: generateStartTime(),
-    endTime: generateEndTime(),
+    startTime,
+    endTime,
+    diffTime: dayjs(endTime.dataTime).diff(dayjs(startTime.dataTime)),
+    stopTime: msToTime(dayjs(endTime.dataTime).diff(dayjs(startTime.dataTime))),
     isFavorite: Boolean(getRandomInteger()),
     isPast: isPast(day),
     isFuture: isFuture(day),

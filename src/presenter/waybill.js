@@ -3,6 +3,7 @@ import SortView from '../view/sort.js';
 import NoWaypointView from '../view/no-waypoint.js';
 import WaypointPresenter from './waypoint.js';
 import { updateItem } from '../util/common.js';
+import { sortDateDown, sortDateUp, sortPriceUp, sortPriceDown, sortTimeUp, sortTimeDown } from '../util/common.js';
 import { render, RenderPosition } from '../util/render.js';
 
 export default class Waybill {
@@ -10,16 +11,68 @@ export default class Waybill {
     this._waybillContainer = waybillContainer;
     this._waypointPresenter = {};
 
+    this._sortDateFlag = false;
+    this._sortPriceFlag = false;
+    this._sortTimeFlag = false;
+
     this._sortComponent = new SortView;
     this._mainEventListComponent = new MainEventListView();
     this._noWaypointComponent = new NoWaypointView();
     this._waypointChangeHandler = this._waypointChangeHandler.bind(this);
     this._waypointModeHandler = this._waypointModeHandler.bind(this);
+    this._sortByDayHandler = this._sortByDayHandler.bind(this);
+    this._sortByPriceHandler = this._sortByPriceHandler.bind(this);
+    this._sortByTimeHandler = this._sortByTimeHandler.bind(this);
   }
 
   init(waypoints) {
     this._waypoints = waypoints.slice();
     this._renderWaybill();
+  }
+
+  _sortByTime() {
+    if (this._sortTimeFlag) {
+      this._waypoints.sort(sortTimeUp);
+    } else {
+      this._waypoints.sort(sortTimeDown);
+    }
+  }
+
+  _sortByDay() {
+    if (this._sortDateFlag) {
+      this._waypoints.sort(sortDateUp);
+    } else {
+      this._waypoints.sort(sortDateDown);
+    }
+  }
+
+  _sortByPrice() {
+    if (this._sortPriceFlag) {
+      this._waypoints.sort(sortPriceUp);
+    } else {
+      this._waypoints.sort(sortPriceDown);
+    }
+  }
+
+  _sortByDayHandler() {
+    this._sortDateFlag = !this._sortDateFlag;
+    this._sortByDay();
+    this._clearWaypoinstList();
+    this._renderWaypointsList();
+  }
+
+  _sortByPriceHandler() {
+    this._sortPriceFlag = !this._sortPriceFlag;
+    this._sortByPrice();
+    this._clearWaypoinstList();
+    this._renderWaypointsList();
+  }
+
+  _sortByTimeHandler() {
+    this._sortTimeFlag = !this._sortTimeFlag;
+    this._sortByTime();
+    this._clearWaypoinstList();
+    this._renderWaypointsList();
   }
 
   _waypointChangeHandler(updatedWaypoint) {
@@ -33,6 +86,9 @@ export default class Waybill {
 
   _renderSort() {
     render(this._waybillContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+    this._sortComponent.setSortByDayHandler(this._sortByDayHandler);
+    this._sortComponent.setSortByPriceHandler(this._sortByPriceHandler);
+    this._sortComponent.setSortByTimeHandler(this._sortByTimeHandler);
   }
 
   _renderMainEventList() {

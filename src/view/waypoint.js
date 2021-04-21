@@ -1,8 +1,7 @@
-import { calculateDifferenceInTime } from '../util/common.js';
 import AbstractView from './abstract.js';
 
 const createWaypointTemplate = (object) => {
-  const {dateItem, type, title, startTime, endTime, basePrice, offers, isFavorite} = object;
+  const {dateItem, type, title, startTime, endTime, basePrice, offers, isFavorite, stopTime} = object;
 
   return `<li class="trip-events__item">
   <div class="event">
@@ -17,7 +16,7 @@ const createWaypointTemplate = (object) => {
         &mdash;
         <time class="event__end-time" datetime="${endTime.dataTime}">${endTime.visibleTime}</time>
       </p>
-      <p class="event__duration">${calculateDifferenceInTime(startTime.visibleTime, endTime.visibleTime)}H</p>
+      <p class="event__duration">${stopTime}H</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
