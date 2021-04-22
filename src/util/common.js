@@ -45,21 +45,14 @@ export const getRandomIndex = (array) => {
   return getRandomInteger(0, array.length - 1);
 };
 
-export const calculateDifferenceInTime = (firstDate, secondDate) => {
-  const getDate = (string) => new Date(0, 0,0, string.split(':')[0], string.split(':')[1]);
-  const different = (getDate(secondDate) - getDate(firstDate));
-  let differentRes, hours, minuts;
-  if(different > 0) {
-    differentRes = different;
-    hours = Math.floor((differentRes % 86400000) / 3600000);
-    minuts = Math.round(((differentRes % 86400000) % 3600000) / 60000);
-  } else {
-    differentRes = Math.abs((getDate(firstDate) - getDate(secondDate)));
-    hours = Math.floor(24 - (differentRes % 86400000) / 3600000);
-    minuts = Math.round(60 - ((differentRes % 86400000) % 3600000) / 60000);
-  }
-  const result = hours + ':' + minuts;
-  return result;
+export const msToTime = (duration) => {
+  let minutes = parseInt((duration / (1000 * 60)) % 60);
+  let hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+
+  hours = (hours < 10) ? '0' + hours : hours;
+  minutes = (minutes < 10) ? '0' + minutes : minutes;
+
+  return hours + ':' + minutes;
 };
 
 export const updateItem = (items, update) => {
@@ -74,4 +67,32 @@ export const updateItem = (items, update) => {
     update,
     ...items.slice(index + 1),
   ];
+};
+
+export const sortDateUp = (a, b) => {
+  const dateA = new Date(a.dateItem);
+  const dateB = new Date(b.dateItem);
+  return dateA - dateB;
+};
+
+export const sortDateDown = (a, b) => {
+  const dateA = new Date(a.dateItem);
+  const dateB = new Date(b.dateItem);
+  return dateB - dateA;
+};
+
+export const sortPriceUp = (a, b) => {
+  return a.basePrice - b.basePrice;
+};
+
+export const sortPriceDown = (a, b) => {
+  return b.basePrice - a.basePrice;
+};
+
+export const sortTimeUp = (a, b) => {
+  return a.diffTime - b.diffTime;
+};
+
+export const sortTimeDown = (a, b) => {
+  return b.diffTime - a.diffTime;
 };

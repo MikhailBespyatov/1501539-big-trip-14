@@ -26,7 +26,44 @@ const createSortTemplate = () => {
 };
 
 export default class Sort extends AbstractView {
+  constructor() {
+    super();
+    this._sortByDayHandler = this._sortByDayHandler.bind(this);
+    this._sortByPriceHandler = this._sortByPriceHandler.bind(this);
+    this._sortByTimeHandler =this._sortByTimeHandler.bind(this);
+  }
+
   getTemplate() {
     return createSortTemplate();
+  }
+
+  _sortByTimeHandler(evt) {
+    evt.preventDefault();
+    this._callback.sortByTime();
+  }
+
+  _sortByDayHandler(evt) {
+    evt.preventDefault();
+    this._callback.sortByDay();
+  }
+
+  _sortByPriceHandler(evt) {
+    evt.preventDefault();
+    this._callback.sortByPrice();
+  }
+
+  setSortByTimeHandler(callback) {
+    this._callback.sortByTime = callback;
+    this.getElement().querySelector('#sort-time').addEventListener('click', this._sortByTimeHandler);
+  }
+
+  setSortByDayHandler(callback) {
+    this._callback.sortByDay = callback;
+    this.getElement().querySelector('#sort-day').addEventListener('click', this._sortByDayHandler);
+  }
+
+  setSortByPriceHandler(callback) {
+    this._callback.sortByPrice = callback;
+    this.getElement().querySelector('#sort-price').addEventListener('click', this._sortByPriceHandler);
   }
 }
