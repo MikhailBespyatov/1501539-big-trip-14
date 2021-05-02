@@ -30,7 +30,7 @@ export const generateEndTime = () => {
 
 export const generateDay = () => {
   const dayGap = 7;
-  const time = dayjs().add(getRandomInteger(-dayGap, dayGap), 'd');
+  const time = dayjs().add(getRandomInteger(-dayGap, dayGap), 'd').add(getRandomInteger(12, 24), 'h').add(getRandomInteger(1, 59), 'm');
   return time;
 };
 

@@ -30,47 +30,34 @@ export default class Waybill {
     this._renderWaybill();
   }
 
-  _sortByTime() {
-    if (this._sortTimeFlag) {
-      this._waypoints.sort(sortTimeUp);
-    } else {
-      this._waypoints.sort(sortTimeDown);
-    }
-  }
-
-  _sortByDay() {
-    if (this._sortDateFlag) {
-      this._waypoints.sort(sortDateUp);
-    } else {
-      this._waypoints.sort(sortDateDown);
-    }
-  }
-
-  _sortByPrice() {
-    if (this._sortPriceFlag) {
-      this._waypoints.sort(sortPriceUp);
-    } else {
-      this._waypoints.sort(sortPriceDown);
+  _sortingCondition(sortFlag, sortUpCallback, sortDownCallback) {
+    switch (sortFlag) {
+      case true:
+        this._waypoints.sort(sortUpCallback);
+        break;
+      case false:
+        this._waypoints.sort(sortDownCallback);
+        break;
     }
   }
 
   _sortByDayHandler() {
     this._sortDateFlag = !this._sortDateFlag;
-    this._sortByDay();
+    this._sortingCondition(this._sortDateFlag, sortDateUp, sortDateDown);
     this._clearWaypoinstList();
     this._renderWaypointsList();
   }
 
   _sortByPriceHandler() {
     this._sortPriceFlag = !this._sortPriceFlag;
-    this._sortByPrice();
+    this._sortingCondition(this._sortPriceFlag, sortPriceUp, sortPriceDown);
     this._clearWaypoinstList();
     this._renderWaypointsList();
   }
 
   _sortByTimeHandler() {
     this._sortTimeFlag = !this._sortTimeFlag;
-    this._sortByTime();
+    this._sortingCondition(this._sortTimeFlag, sortTimeUp, sortTimeDown);
     this._clearWaypoinstList();
     this._renderWaypointsList();
   }
