@@ -1,6 +1,7 @@
 import EditFormView from '../view/edit-form.js';
 import WaypointView from '../view/waypoint.js';
 import { render, RenderPosition, replace, remove } from '../util/render.js';
+import { types, cities } from '../mock/generate-waypoint.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -27,12 +28,14 @@ export default class Waypoint {
 
   init(waypoint) {
     this._waypoint = waypoint;
+    this._types = types;
+    this._cities = cities;
 
     const prevWaypointComponent = this._waypointComponent;
     const prevWaypointEditComponent = this._waypointEditComponent;
 
     this._waypointComponent = new WaypointView(waypoint);
-    this._waypointEditComponent = new EditFormView(waypoint);
+    this._waypointEditComponent = new EditFormView(waypoint, this._types, this._cities);
 
     this._waypointComponent.setRollupClickHandler(this._waypointRollupClickHandler);
     this._waypointEditComponent.setFormSubmitHandler(this._formSubmitHandler);
@@ -83,6 +86,7 @@ export default class Waypoint {
   _onEscKeydown(evt) {
     if (evt.key === 'Esc' || evt.key === 'Escape') {
       evt.preventDefault();
+      this._waypointEditComponent.reset(this._waypoint);
       this._replaceEditToItem();
       document.removeEventListener('keydown', this._onEscKeydown);
     }
@@ -98,18 +102,11 @@ export default class Waypoint {
   }
 
   _editRollupClickHandler() {
+    this._waypointEditComponent.reset(this._waypoint);
     this._replaceEditToItem();
   }
 
   _favoriteClickHandler() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._waypoint,
-        {
-          isFavorite: !this._waypoint.isFavorite,
-        },
-      ),
-    );
+    this._changeData({ ...this._waypoint, isFavorite: !this._waypoint.isFavorite });
   }
 }
