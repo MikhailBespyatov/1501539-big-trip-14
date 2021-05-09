@@ -2,6 +2,7 @@ import EditFormView from '../view/edit-form.js';
 import WaypointView from '../view/waypoint.js';
 import { render, RenderPosition, replace, remove } from '../util/render.js';
 import { types, cities } from '../mock/generate-waypoint.js';
+import { USER_ACTION, UPDATE_TYPE } from '../mock/constant.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -24,6 +25,7 @@ export default class Waypoint {
     this._editRollupClickHandler = this._editRollupClickHandler.bind(this);
     this._onEscKeydown = this._onEscKeydown.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
   }
 
   init(waypoint) {
@@ -35,12 +37,13 @@ export default class Waypoint {
     const prevWaypointEditComponent = this._waypointEditComponent;
 
     this._waypointComponent = new WaypointView(waypoint);
-    this._waypointEditComponent = new EditFormView(waypoint, this._types, this._cities);
+    this._waypointEditComponent = new EditFormView(this._types, this._cities, waypoint);
 
     this._waypointComponent.setRollupClickHandler(this._waypointRollupClickHandler);
     this._waypointEditComponent.setFormSubmitHandler(this._formSubmitHandler);
     this._waypointEditComponent.setRollupClickHandler(this._editRollupClickHandler);
     this._waypointComponent.setFavoriteClick(this._favoriteClickHandler);
+    this._waypointEditComponent.setCanselDeleteClickHandler(this._deleteClickHandler);
 
     if (prevWaypointComponent === null || prevWaypointEditComponent === null) {
       render(this._waypointContainer, this._waypointComponent, RenderPosition.BEFOREEND);
@@ -93,11 +96,19 @@ export default class Waypoint {
   }
 
   _waypointRollupClickHandler() {
+    this._changeData();
     this._replaceItemToEdit();
   }
 
-  _formSubmitHandler(waypoint) {
-    this._changeData(waypoint);
+  _formSubmitHandler(update) {
+    const isMinorUpdate = (this._waypoint.date !== update.date)
+    || (this._waypoint.basePrice !== update.basePrice)
+    || (this._waypoint.diffTime !== update.diffTime);
+
+    this._changeData(
+      USER_ACTION.UPDATE_POINT,
+      isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
+      {...update});
     this._replaceEditToItem();
   }
 
@@ -107,6 +118,17 @@ export default class Waypoint {
   }
 
   _favoriteClickHandler() {
-    this._changeData({ ...this._waypoint, isFavorite: !this._waypoint.isFavorite });
+    this._changeData(
+      USER_ACTION.UPDATE_POINT,
+      UPDATE_TYPE.PATCH,
+      { ...this._waypoint, isFavorite: !this._waypoint.isFavorite });
+  }
+
+  _deleteClickHandler() {
+    this._changeData(
+      USER_ACTION.DELETE_POINT,
+      UPDATE_TYPE.MAJOR,
+      {...this._waypoint},
+    );
   }
 }

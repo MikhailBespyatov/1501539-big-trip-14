@@ -58,20 +58,6 @@ export const msToTime = (duration) => {
   return `${days === '0D' ? '' : days} ${hours}:${minutes}`;
 };
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 export const sortDateUp = (a, b) => {
   const dateA = new Date(a.dateStart);
   const dateB = new Date(b.dateStart);

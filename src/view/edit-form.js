@@ -1,5 +1,7 @@
+import he from 'he';
 import Smart from './smart-abstract.js';
 import { ucFirst, getDateFormFormat } from '../util/common.js';
+import { blanc, cities } from '../mock/generate-waypoint.js';
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -35,7 +37,8 @@ const getCheckedFlag = (desiredOffers, dataOffers) => {
   return dataOffers.some((it) => it.id === desiredOffers.id);
 };
 
-const createEditFormTemplate = (datalist, types, сities) => {
+const createEditFormTemplate = (types, сities, datalist = blanc) => {
+
   const { basePrice, dateStart, dateEnd,
     type, offers, title } = datalist;
 
@@ -64,11 +67,9 @@ const createEditFormTemplate = (datalist, types, сities) => {
         <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${title}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(title)}" list="destination-list-1">
         <datalist id="destination-list-1">
-          <option value="Amsterdam"></option>
-          <option value="Geneva"></option>
-          <option value="Chamonix"></option>
+          ${cities.map((it) => `<option value="${it.title}"></option>`).join('')}
         </datalist>
       </div>
 
@@ -85,14 +86,14 @@ const createEditFormTemplate = (datalist, types, сities) => {
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Cancel</button>
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>
+      <button class="event__reset-btn" type="reset">${datalist.id ? 'Delete' : 'Cansel'}</button>
+      ${datalist.id ? `<button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>` : ''}
     </header>
     <section class="event__details">
       ${allOffersType.length === 0 ? '' : `<section class="event__section  event__section--offers">
@@ -102,8 +103,7 @@ const createEditFormTemplate = (datalist, types, сities) => {
       </div>
     </section>`}
 
-     ${(allDestinations.photos.length === 0 && allDestinations.destinations.length === 0) ? ''
-    : `<section class="event__section  event__section--destination">
+     ${allDestinations ? `<section class="event__section  event__section--destination">
      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
      <p class="event__destination-description">${allDestinations.destinations.map((element) => element).join(' ')}</p>
 
@@ -112,14 +112,14 @@ const createEditFormTemplate = (datalist, types, сities) => {
        ${allDestinations.photos.map((element) => `<img class="event__photo" src="img/photos/${element}.jpg" alt="Event photo">`).join('')}
        </div>
      </div>
-   </section>`}
+   </section>` : ''}
     </section>
   </form>
 </li>`;
 };
 
 export default class EditForm extends Smart {
-  constructor(datalist, types, cities) {
+  constructor(types, cities, datalist = blanc) {
     super();
     this._datalist = EditForm.parseWaypointToData(datalist);
     this._types = types;
@@ -135,6 +135,7 @@ export default class EditForm extends Smart {
     this._offerChekedHandler = this._offerChekedHandler.bind(this);
     this._pickerStartChangeHandler = this._pickerStartChangeHandler.bind(this);
     this._pickerEndChangeHandler = this._pickerEndChangeHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setPickerStart();
@@ -142,7 +143,7 @@ export default class EditForm extends Smart {
   }
 
   getTemplate() {
-    return createEditFormTemplate(this._datalist, this._types, this._cities);
+    return createEditFormTemplate(this._types, this._cities, this._datalist);
   }
 
   _setInnerHandlers() {
@@ -227,11 +228,17 @@ export default class EditForm extends Smart {
       title: evtValue, destinations: destination.destinations,
       photos: destination.photos,
     }, isRender);
+
+    if (this._cities.some((it) => it.title === evtValue)) {
+      this.getElement().querySelector('.event__save-btn').disabled = false;
+    } else {
+      this.getElement().querySelector('.event__save-btn').disabled = true;
+    }
   }
 
   _priceInputHandler(evt) {
     evt.preventDefault();
-    this.updateData({ basePrice: evt.target.value }, true);
+    this.updateData({ basePrice: parseInt(evt.target.value) }, true);
   }
 
   _offerChekedHandler() {
@@ -241,12 +248,18 @@ export default class EditForm extends Smart {
     this.updateData({ offers: offers }, true);
   }
 
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.canselDeleteClick();
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
     this.setRollupClickHandler(this._callback.rollupClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
     this._setPickerStart();
     this._setPickerEnd();
+    this.setCanselDeleteClickHandler(this._callback.canselDeleteClick);
   }
 
   reset(waypoint) {
@@ -260,7 +273,14 @@ export default class EditForm extends Smart {
 
   setRollupClickHandler(callback) {
     this._callback.rollupClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._rollupClickHandler);
+    if (this.getElement().querySelector('.event__rollup-btn')) {
+      this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._rollupClickHandler);
+    }
+  }
+
+  setCanselDeleteClickHandler(callback) {
+    this._callback.canselDeleteClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._deleteClickHandler);
   }
 
   static parseWaypointToData(waypoint) {
@@ -273,5 +293,19 @@ export default class EditForm extends Smart {
     data = { ...data };
 
     return data;
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._pickerStart) {
+      this._pickerStart.destroy();
+      this._pickerStart = null;
+    }
+
+    if (this._pickerEnd) {
+      this._pickerEnd.destroy();
+      this._pickerEnd = null;
+    }
   }
 }

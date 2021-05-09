@@ -2,69 +2,100 @@ import MainEventListView from '../view/main-event-list.js';
 import SortView from '../view/sort.js';
 import NoWaypointView from '../view/no-waypoint.js';
 import WaypointPresenter from './waypoint.js';
-import { updateItem } from '../util/common.js';
-import { sortDateDown, sortDateUp, sortPriceUp, sortPriceDown, sortTimeUp, sortTimeDown } from '../util/common.js';
-import { render, RenderPosition } from '../util/render.js';
+import NewWaypointPresenter from './new-waypoint.js';
+import { sortDateUp, sortPriceUp, sortTimeUp } from '../util/common.js';
+import { render, RenderPosition, remove } from '../util/render.js';
+import { SORT_TYPE, USER_ACTION, UPDATE_TYPE, FILTER_TYPE } from '../mock/constant.js';
+import { filter } from '../util/filter.js';
 
 export default class Waybill {
-  constructor(waybillContainer) {
+  constructor(waybillContainer, pointModel, filterModel) {
+    this._pointModel = pointModel;
+    this._filterModel = filterModel;
     this._waybillContainer = waybillContainer;
     this._waypointPresenter = {};
 
-    this._sortDateFlag = false;
-    this._sortPriceFlag = false;
-    this._sortTimeFlag = false;
+    this._currentSortType = SORT_TYPE.DAY;
 
-    this._sortComponent = new SortView;
+    this._sortComponent = null;
     this._mainEventListComponent = new MainEventListView();
     this._noWaypointComponent = new NoWaypointView();
-    this._waypointChangeHandler = this._waypointChangeHandler.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._waypointModeHandler = this._waypointModeHandler.bind(this);
-    this._sortByDayHandler = this._sortByDayHandler.bind(this);
-    this._sortByPriceHandler = this._sortByPriceHandler.bind(this);
-    this._sortByTimeHandler = this._sortByTimeHandler.bind(this);
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+
+    this._pointModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
+    this._newWaypointPresenter = new NewWaypointPresenter(this._mainEventListComponent, this._handleViewAction, this._filterModel);
   }
 
-  init(waypoints) {
-    this._waypoints = waypoints.slice();
+  init() {
     this._renderWaybill();
   }
 
-  _sortingCondition(sortFlag, sortUpCallback, sortDownCallback) {
-    switch (sortFlag) {
-      case true:
-        this._waypoints.sort(sortUpCallback);
+  createNewWaypoint() {
+    this._currentSortType = SORT_TYPE.PRICE;
+    this._filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING);
+    this._newWaypointPresenter.init();
+  }
+
+  _handleViewAction(actionType, updateType, update) {
+    this._newWaypointPresenter.destroy();
+    switch(actionType) {
+      case USER_ACTION.UPDATE_POINT:
+        this._pointModel.updatePoint(updateType, update);
         break;
-      case false:
-        this._waypoints.sort(sortDownCallback);
+      case USER_ACTION.ADD_POINT:
+        this._pointModel.addPoint(updateType, update);
+        break;
+      case USER_ACTION.DELETE_POINT:
+        this._pointModel.deletePoint(updateType, update);
+    }
+  }
+
+  _handleModelEvent(updateType, data) {
+    switch(updateType) {
+      case UPDATE_TYPE.PATCH:
+        this._waypointPresenter[data.id].init(data);
+        break;
+      case UPDATE_TYPE.MINOR:
+        this._clearWaybill();
+        this._renderWaybill();
+        break;
+      case UPDATE_TYPE.MAJOR:
+        this._clearWaybill(true);
+        this._renderWaybill();
         break;
     }
   }
 
-  _sortByDayHandler() {
-    this._sortDateFlag = !this._sortDateFlag;
-    this._sortingCondition(this._sortDateFlag, sortDateUp, sortDateDown);
-    this._clearWaypoinstList();
-    this._renderWaypointsList();
+  _getPoints() {
+    const filteredType = this._filterModel.getFilter();
+    const points = this._pointModel.getPoints();
+    const filteredPoints = filter[filteredType](points);
+    switch(this._currentSortType) {
+      case SORT_TYPE.DAY:
+        return  filteredPoints.sort(sortDateUp);
+      case SORT_TYPE.TIME:
+        return filteredPoints.sort(sortTimeUp);
+      case SORT_TYPE.PRICE:
+        return filteredPoints.sort(sortPriceUp);
+    }
+
+    return filteredPoints;
   }
 
-  _sortByPriceHandler() {
-    this._sortPriceFlag = !this._sortPriceFlag;
-    this._sortingCondition(this._sortPriceFlag, sortPriceUp, sortPriceDown);
-    this._clearWaypoinstList();
-    this._renderWaypointsList();
-  }
+  _sortTypeChangeHandler(sortType) {
+    if (this._currentSortType === sortType ) {
+      return;
+    }
 
-  _sortByTimeHandler() {
-    this._sortTimeFlag = !this._sortTimeFlag;
-    this._sortingCondition(this._sortTimeFlag, sortTimeUp, sortTimeDown);
-    this._clearWaypoinstList();
-    this._renderWaypointsList();
-  }
-
-  _waypointChangeHandler(updatedWaypoint) {
-    this._waypoints = updateItem(this._waypoints, updatedWaypoint);
-    this._waypointPresenter[updatedWaypoint.id].init(updatedWaypoint);
+    this._currentSortType = sortType;
+    this._clearWaybill();
+    this._newWaypointPresenter.destroy();
+    this._renderWaybill();
   }
 
   _waypointModeHandler() {
@@ -72,10 +103,14 @@ export default class Waybill {
   }
 
   _renderSort() {
+    if (this._sortComponent !== null) {
+      this._sortComponent = null;
+    }
+
+    this._sortComponent = new SortView(this._currentSortType);
+    this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
+
     render(this._waybillContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
-    this._sortComponent.setSortByDayHandler(this._sortByDayHandler);
-    this._sortComponent.setSortByPriceHandler(this._sortByPriceHandler);
-    this._sortComponent.setSortByTimeHandler(this._sortByTimeHandler);
   }
 
   _renderMainEventList() {
@@ -83,30 +118,36 @@ export default class Waybill {
   }
 
   _renderWaypoint(waypoint) {
-    const waypointPresenter = new WaypointPresenter(this._mainEventListComponent, this._waypointChangeHandler, this._waypointModeHandler);
+    const waypointPresenter = new WaypointPresenter(this._mainEventListComponent, this._handleViewAction, this._waypointModeHandler);
     waypointPresenter.init(waypoint);
     this._waypointPresenter[waypoint.id] = waypointPresenter;
   }
 
   _renderWaypointsList() {
-    this._waypoints.map((waypoint) => this._renderWaypoint(waypoint));
+    this._getPoints().map((point) => this._renderWaypoint(point));
   }
 
   _renderNoWaypoint() {
     render(this._waybillContainer, this._noWaypointComponent, RenderPosition.BEFOREEND);
   }
 
-  _clearWaypoinstList() {
+  _clearWaybill(resetSortType = false) {
     Object.values(this._waypointPresenter).forEach((presenter) => presenter.destroy());
     this._waypointPresenter = {};
+    remove(this._sortComponent);
+    remove(this._noWaypointComponent);
+
+    if (resetSortType) {
+      this._currentSortType = SORT_TYPE.DAY;
+    }
   }
 
   _renderWaybill() {
-    if (this._waypoints.length === 0) {
+    if (this._getPoints().length === 0) {
       this._renderNoWaypoint();
     } else {
-      this._renderSort();
       this._renderMainEventList();
+      this._renderSort();
       this._renderWaypointsList();
     }
   }

@@ -1,30 +1,36 @@
+import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 import { getRandomInteger, getRandomArray, shuffle } from '../util/common.js';
 import { OFFERS, DESTINATION_DESCRIPTIONS, PHOTOS } from './constant.js';
-import {
-  generatePointType, generateTitle, generateDay, isPast, isFuture
-} from '../util/waypoint.js';
+import {generatePointType, generateTitle, generateDay } from '../util/waypoint.js';
 
-const WAYPOINT_COUNT = 10;
+const WAYPOINT_COUNT = 5;
 
 export const generateWaypoint = () => {
   const day = generateDay();
+  const dateStart = day.toDate();
+  const dateEnd = day.add(getRandomInteger(12, 24), 'h').add(getRandomInteger(1, 59), 'm').toDate();
   return {
     id: nanoid(),
     type: generatePointType(),
     title: generateTitle(),
-    dateStart: day.toDate(),
-    dateEnd: day.add(getRandomInteger(12, 24), 'h').add(getRandomInteger(1, 59), 'm').toDate(),
-    dateItem: day.format('MMMM D'),
-    dateEdit: day.format('DD/MM/YY'),
+    dateStart,
+    dateEnd,
     basePrice: getRandomInteger(200, 1000),
     offers: getRandomArray(OFFERS),
-    destinations: shuffle(DESTINATION_DESCRIPTIONS).slice(getRandomInteger(5, 10)),
-    photos: shuffle(PHOTOS).slice(getRandomInteger(0, 4)),
     isFavorite: Boolean(getRandomInteger()),
-    isPast: isPast(day),
-    isFuture: isFuture(day),
   };
+};
+
+export const blanc = {
+  id: null,
+  type: 'taxi',
+  title: '',
+  dateStart: dayjs().toDate(),
+  dateEnd: dayjs().toDate(),
+  basePrice: 0,
+  offers: [],
+  isFavorite: false,
 };
 
 export const types = [

@@ -1,9 +1,11 @@
 import AbstractView from './abstract.js';
+import { SORT_TYPE } from '../mock/constant.js';
 
-const createSortTemplate = () => {
+const createSortTemplate = (currentSortType) => {
   return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
   <div class="trip-sort__item  trip-sort__item--day">
-    <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day" checked>
+    <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day"
+    data-sort-type="${SORT_TYPE.DAY}" ${currentSortType === SORT_TYPE.DAY ? 'checked' : ''}>
     <label class="trip-sort__btn" for="sort-day">Day</label>
   </div>
   <div class="trip-sort__item  trip-sort__item--event">
@@ -11,11 +13,13 @@ const createSortTemplate = () => {
     <label class="trip-sort__btn" for="sort-event">Event</label>
   </div>
   <div class="trip-sort__item  trip-sort__item--time">
-    <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-time">
+    <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-time"
+     data-sort-type="${SORT_TYPE.TIME}" ${currentSortType === SORT_TYPE.TIME ? 'checked' : ''}>
     <label class="trip-sort__btn" for="sort-time">Time</label>
   </div>
   <div class="trip-sort__item  trip-sort__item--price">
-    <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price">
+    <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price"
+     data-sort-type="${SORT_TYPE.PRICE}" ${currentSortType === SORT_TYPE.PRICE ? 'checked' : ''}>
     <label class="trip-sort__btn" for="sort-price">Price</label>
   </div>
   <div class="trip-sort__item  trip-sort__item--offer">
@@ -26,44 +30,27 @@ const createSortTemplate = () => {
 };
 
 export default class Sort extends AbstractView {
-  constructor() {
+  constructor(currentSortType) {
     super();
-    this._sortByDayHandler = this._sortByDayHandler.bind(this);
-    this._sortByPriceHandler = this._sortByPriceHandler.bind(this);
-    this._sortByTimeHandler =this._sortByTimeHandler.bind(this);
+    this._currentSortType = currentSortType;
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createSortTemplate();
+    return createSortTemplate(this._currentSortType);
   }
 
-  _sortByTimeHandler(evt) {
+  _sortTypeChangeHandler(evt) {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
     evt.preventDefault();
-    this._callback.sortByTime();
+    this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
 
-  _sortByDayHandler(evt) {
-    evt.preventDefault();
-    this._callback.sortByDay();
-  }
-
-  _sortByPriceHandler(evt) {
-    evt.preventDefault();
-    this._callback.sortByPrice();
-  }
-
-  setSortByTimeHandler(callback) {
-    this._callback.sortByTime = callback;
-    this.getElement().querySelector('#sort-time').addEventListener('click', this._sortByTimeHandler);
-  }
-
-  setSortByDayHandler(callback) {
-    this._callback.sortByDay = callback;
-    this.getElement().querySelector('#sort-day').addEventListener('click', this._sortByDayHandler);
-  }
-
-  setSortByPriceHandler(callback) {
-    this._callback.sortByPrice = callback;
-    this.getElement().querySelector('#sort-price').addEventListener('click', this._sortByPriceHandler);
+  setSortTypeChangeHandler(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener('click', this._sortTypeChangeHandler);
   }
 }
