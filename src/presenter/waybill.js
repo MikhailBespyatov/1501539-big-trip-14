@@ -32,7 +32,17 @@ export default class Waybill {
   }
 
   init() {
+    this._pointModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
     this._renderWaybill();
+  }
+
+  destroy() {
+    this._clearWaybill(true);
+    this._newWaypointPresenter.destroy();
+    remove(this._mainEventListComponent);
+    this._pointModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   createNewWaypoint() {

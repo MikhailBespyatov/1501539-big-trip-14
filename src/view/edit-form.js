@@ -124,8 +124,10 @@ export default class EditForm extends Smart {
     this._datalist = EditForm.parseWaypointToData(datalist);
     this._types = types;
     this._cities = cities;
-    this._pickerStart = null;
-    this._pickerEnd = null;
+    this._datePicker = {
+      start: null,
+      end: null,
+    };
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._rollupClickHandler = this._rollupClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
@@ -133,13 +135,11 @@ export default class EditForm extends Smart {
     this._offerChekedHandler = this._offerChekedHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._offerChekedHandler = this._offerChekedHandler.bind(this);
-    this._pickerStartChangeHandler = this._pickerStartChangeHandler.bind(this);
-    this._pickerEndChangeHandler = this._pickerEndChangeHandler.bind(this);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
+    this._dateChangeHandler = this._dateChangeHandler.bind(this);
 
     this._setInnerHandlers();
-    this._setPickerStart();
-    this._setPickerEnd();
+    this._setDatePicker();
   }
 
   getTemplate() {
@@ -158,47 +158,39 @@ export default class EditForm extends Smart {
       .forEach((it) => it.addEventListener('click', this._offerChekedHandler));
   }
 
-  _setPickerStart() {
-    if (this._pickerStart) {
-      this._pickerStart.destroy();
-      this._pickerStart = null;
+  _setDatePicker() {
+    const datePicker = Object.entries(this._datePicker);
+
+    for (const onePick of datePicker) {
+      const onePickKeys = onePick[0];
+      let onePickValues = onePick[1];
+
+      if (onePickValues) {
+        onePickValues.destroy();
+        onePickValues = null;
+      }
+
+      this._datePicker[onePickKeys] = flatpickr(
+        this.getElement().querySelector(`#event-${onePickKeys}-time-1`),
+        {
+          dateFormat: 'd/m/y H:i',
+          enableTime: true,
+          defaultDate: this._datalist[`date${ucFirst(onePickKeys)}`],
+          minDate: onePickKeys === 'end' ? this._datalist.dateStart : null,
+          maxDate: onePickKeys === 'start' ? this._datalist.dateEnd : null,
+          onChange: (evt) => this._dateChangeHandler(evt, `date${ucFirst(onePickKeys)}`),
+        },
+      );
     }
-    this._pickerStart = flatpickr(
-      this.getElement().querySelector('#event-start-time-1'),
-      {
-        enableTime: true,
-        time_24hr: true,
-        dateFormat: 'd/m/y H:i',
-        defaultDate: this._datalist.dateStart,
-        onChange: this._pickerStartChangeHandler,
-      },
-    );
   }
 
-  _setPickerEnd() {
-    if (this._pickerEnd) {
-      this._pickerEnd.destroy();
-      this._pickerEnd = null;
-    }
+  _dateChangeHandler([selectedDate], keyDate) {
+    this.updateData({
+      [`${keyDate}`]: selectedDate,
+    }, true);
 
-    this._pickerEnd = flatpickr(
-      this.getElement().querySelector('#event-end-time-1'),
-      {
-        enableTime: true,
-        time_24hr: true,
-        dateFormat: 'd/m/y H:i',
-        defaultDate: this._datalist.dateEnd,
-        onChange: this._pickerEndChangeHandler,
-      },
-    );
-  }
-
-  _pickerStartChangeHandler([userDate]) {
-    this.updateData({ dateStart: userDate });
-  }
-
-  _pickerEndChangeHandler([userDate]) {
-    this.updateData({ dateEnd: userDate });
+    this._datePicker.start.set('maxDate', this._datalist.dateEnd);
+    this._datePicker.end.set('minDate', this._datalist.dateStart);
   }
 
   _formSubmitHandler(evt) {
@@ -257,8 +249,7 @@ export default class EditForm extends Smart {
     this._setInnerHandlers();
     this.setRollupClickHandler(this._callback.rollupClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
-    this._setPickerStart();
-    this._setPickerEnd();
+    this._setDatePicker();
     this.setCanselDeleteClickHandler(this._callback.canselDeleteClick);
   }
 
@@ -299,13 +290,8 @@ export default class EditForm extends Smart {
     super.removeElement();
 
     if (this._pickerStart) {
-      this._pickerStart.destroy();
-      this._pickerStart = null;
-    }
-
-    if (this._pickerEnd) {
-      this._pickerEnd.destroy();
-      this._pickerEnd = null;
+      this._datePicker.destroy();
+      this._datePicker = null;
     }
   }
 }

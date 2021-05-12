@@ -4,7 +4,7 @@ import { getRandomInteger, getRandomArray, shuffle } from '../util/common.js';
 import { OFFERS, DESTINATION_DESCRIPTIONS, PHOTOS } from './constant.js';
 import {generatePointType, generateTitle, generateDay } from '../util/waypoint.js';
 
-const WAYPOINT_COUNT = 5;
+const WAYPOINT_COUNT = 20;
 
 export const generateWaypoint = () => {
   const day = generateDay();
