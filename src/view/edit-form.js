@@ -89,7 +89,7 @@ const createEditFormTemplate = (types, сities, datalist = blanc) => {
         <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
       </div>
 
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${title ? '' : 'disabled'}>Save</button>
       <button class="event__reset-btn" type="reset">${datalist.id ? 'Delete' : 'Cansel'}</button>
       ${datalist.id ? `<button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>

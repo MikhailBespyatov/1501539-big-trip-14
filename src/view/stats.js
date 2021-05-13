@@ -101,7 +101,7 @@ const renderChart = (chartCtx, chartType, points) => {
             display: false,
             drawBorder: false,
           },
-          minBarLength: 50,
+          minBarLength: 100,
         }],
       },
       legend: {
@@ -115,7 +115,7 @@ const renderChart = (chartCtx, chartType, points) => {
 };
 
 const createStatsTemplate = () => {
-  return `<section class="statistics visually-hidden">
+  return `<section class="statistics">
   <h2 class="visually-hidden">Trip statistics</h2>
 
   <div class="statistics__item statistics__item--money">
@@ -136,7 +136,7 @@ export default class Stats extends SmartView {
   constructor(data) {
     super();
 
-    this._data = data;
+    this._data = data.getPoints();
 
     this._moneyChart = null;
     this._typeChart = null;
@@ -168,8 +168,10 @@ export default class Stats extends SmartView {
   removeElement() {
     super.removeElement();
 
-    this._moneyChart = null;
-    this._typeChart = null;
-    this._timeChart = null;
+    if (this._moneyChart !== 0 || this._typeChart !== 0 || this._timeChart !== 0) {
+      this._moneyChart = null;
+      this._typeChart = null;
+      this._timeChart = null;
+    }
   }
 }
