@@ -66,6 +66,7 @@ export default class NewWaypoint {
     remove(this._waypointEditComponent);
     this._waypointEditComponent = null;
     document.removeEventListener('keydown', this._onEscKeydown);
+    document.querySelector('.trip-main__event-add-btn').disabled = false;
   }
 
   _handleNewAction() {

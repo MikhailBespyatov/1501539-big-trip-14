@@ -11,12 +11,11 @@ export default class Filter {
 
     this._handleFilterModel = this._handleFilterModel.bind(this);
     this._filterTypeCheckHandler = this._filterTypeCheckHandler.bind(this);
-
-    this._filterModel.addObserver(this._handleFilterModel);
-    this._pointModel.addObserver(this._handleFilterModel);
   }
 
   init() {
+    this._filterModel.addObserver(this._handleFilterModel);
+    this._pointModel.addObserver(this._handleFilterModel);
     const prevFilterComponent = this._filterComponent;
     this._filterComponent = new FilterView(this._filterModel.getFilter());
 
@@ -41,5 +40,12 @@ export default class Filter {
     }
 
     this._filterModel.setFilter(UPDATE_TYPE.MAJOR, filterType);
+  }
+
+  destroy() {
+    this._filterModel.removeObserver(this._handleFilterModel);
+    this._pointModel.removeObserver(this._handleFilterModel);
+    remove(this._filterComponent);
+    this._filterComponent = null;
   }
 }

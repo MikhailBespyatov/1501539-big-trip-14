@@ -83,7 +83,27 @@ const FILTER_TYPE = {
   EVERYTHING: 'EVERYTHING',
   FUTURE: 'FUTURE',
   PAST: 'PAST',
+  NONE: 'NONE',
+};
+
+const SITE_MENU = {
+  TABLE: 'TABLE',
+  STATS: 'STATS',
+  NEW: 'NEW',
+};
+
+const typeToEmoji = {
+  'TAXI': '🚕',
+  'BUS': '🚌',
+  'TRAIN': '🚂',
+  'SHIP': '🛳',
+  'TRANSPORT': '🚊',
+  'DRIVE': '🚗',
+  'FLIGHT': '✈️',
+  'CHECK-IN': '🏨',
+  'SIGHTSEEING': '🏛',
+  'RESTAURANT': '🍴',
 };
 
 export { ROUTE_POINT_TYPES, TITLES, OFFERS, DESTINATION_DESCRIPTIONS,
-  PHOTOS, SORT_TYPE, USER_ACTION, UPDATE_TYPE, FILTER_TYPE };
+  PHOTOS, SORT_TYPE, USER_ACTION, UPDATE_TYPE, FILTER_TYPE, SITE_MENU, typeToEmoji };
