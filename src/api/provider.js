@@ -15,6 +15,22 @@ const createStoreStructure = (items) => {
   }, {});
 };
 
+const createOffersStoreStructure = (items) => {
+  return items.reduce((acc, current) => {
+    return Object.assign({}, acc, {
+      [current.type]: current,
+    });
+  }, {});
+};
+
+const createDestinationStoreStructure = (items) => {
+  return items.reduce((acc, current) => {
+    return Object.assign({}, acc, {
+      [current.name]: current,
+    });
+  }, {});
+};
+
 export default class Provider {
   constructor(api, store) {
     this._api = api;
@@ -37,7 +53,7 @@ export default class Provider {
   getOffers() {
     if (Provider.isOnline()) {
       this._api.getOffers().then((offers) => {
-        this._store.setOffers(offers);
+        this._store.setOffers(createOffersStoreStructure(offers));
         return offers;
       });
     }
@@ -49,7 +65,7 @@ export default class Provider {
   getDestinations() {
     if (Provider.isOnline()) {
       this._api.getDestinations().then((destinations) => {
-        this._store.setDestinations(destinations);
+        this._store.setDestinations(createDestinationStoreStructure(destinations));
         return destinations;
       });
     }

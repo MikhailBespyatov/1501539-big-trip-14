@@ -47,8 +47,8 @@ const mainMenuPresenter = new MainMenuPresenter(siteHeaderFiltersElement, siteMa
   pageBodyContainer, siteHeaderConteiner, pointModel, filterModel, offersModel, destinationsModel, api);
 const filterPresenter = new FilterPresenter(siteHeaderFiltersElement, pointModel, filterModel);
 
-routePresenter.init();
 costPresenter.init();
+routePresenter.init();
 mainMenuPresenter.init();
 
 Promise.all([
@@ -62,6 +62,9 @@ Promise.all([
   pointModel.setPoints(UPDATE_TYPE.INIT, points);
 
   filterPresenter.init();
+  mainMenuPresenter.setNewButtonDisabledMode(false);
+}).catch(() => {
+  pointModel.setPoints(UPDATE_TYPE.INIT, []);
   mainMenuPresenter.setNewButtonDisabledMode(false);
 });
 

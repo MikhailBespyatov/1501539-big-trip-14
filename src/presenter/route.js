@@ -21,7 +21,6 @@ export default class Route {
     const filteredType = this._filterModel.getFilter();
     const points = this._pointModel.getPoints();
     const filteredPoints = filter[filteredType](points).sort(sortDateUp);
-
     if (filteredPoints.length === 0) {
       return;
     }
