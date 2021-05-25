@@ -1,16 +1,31 @@
 import he from 'he';
+import dayjs from 'dayjs';
 import Smart from './smart-abstract.js';
 import { ucFirst, getDateFormFormat } from '../util/common.js';
-import { blanc, cities } from '../mock/generate-waypoint.js';
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
+const blanc = {
+  id: null,
+  type: 'taxi',
+  destination: {
+    name: '',
+    pictures: [],
+    description: '',
+  },
+  dateStart: dayjs().toDate(),
+  dateEnd: dayjs().toDate(),
+  basePrice: 0,
+  offers: [],
+  isFavorite: false,
+};
+
 const createOfferTemplate = (desiredOffers, dataOffers) => {
   return `${desiredOffers.map((offer) => `<div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}-1" type="checkbox"
-  name="event-offer-${offer.id}" value="${offer.id}" ${getCheckedFlag(offer, dataOffers) ? 'checked' : ''}>
-  <label class="event__offer-label" for="event-offer-${offer.id}-1">
+  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-').toLowerCase()}-1" type="checkbox"
+  name="event-offer-${offer.title.split(' ').join('-').toLowerCase()}" value="${offer.title}" ${getCheckedFlag(offer, dataOffers) ? 'checked' : ''}>
+  <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-').toLowerCase()}-1">
     <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
@@ -26,24 +41,19 @@ const createEventTypeItemTemplate = (types) => {
 };
 
 const findOffer = (data, types) => {
-  return types.find((it) => it.type === data.type.toLowerCase()).offers;
-};
-
-const findDestination = (data, cities) => {
-  return cities.find((it) => it.title === data.title);
+  return types.find((it) => it.type === data.type).offers;
 };
 
 const getCheckedFlag = (desiredOffers, dataOffers) => {
-  return dataOffers.some((it) => it.id === desiredOffers.id);
+  return dataOffers.some((it) => it.title === desiredOffers.title);
 };
 
-const createEditFormTemplate = (types, сities, datalist = blanc) => {
+const createEditFormTemplate = (types, destinations, datalist = blanc) => {
 
   const { basePrice, dateStart, dateEnd,
-    type, offers, title } = datalist;
+    type, offers, destination, isDisabled, isSaving, isDeleting } = datalist;
 
   const allOffersType = findOffer(datalist, types);
-  const allDestinations = findDestination(datalist, сities);
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -67,9 +77,9 @@ const createEditFormTemplate = (types, сities, datalist = blanc) => {
         <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(title)}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination.name)}" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${cities.map((it) => `<option value="${it.title}"></option>`).join('')}
+          ${destinations.map((it) => `<option value="${it.name}"></option>`).join('')}
         </datalist>
       </div>
 
@@ -89,8 +99,9 @@ const createEditFormTemplate = (types, сities, datalist = blanc) => {
         <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
       </div>
 
-      <button class="event__save-btn  btn  btn--blue" type="submit" ${title ? '' : 'disabled'}>Save</button>
-      <button class="event__reset-btn" type="reset">${datalist.id ? 'Delete' : 'Cansel'}</button>
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${!destination.name || isDisabled ? 'disabled' : ''}>
+      ${isSaving ? 'Saving...' : 'Save'}</button>
+      <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${!datalist.id ? 'Cansel' : !isDeleting ? 'Delete' : 'Deleting...'}</button>
       ${datalist.id ? `<button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>
     </button>` : ''}
@@ -103,13 +114,13 @@ const createEditFormTemplate = (types, сities, datalist = blanc) => {
       </div>
     </section>`}
 
-     ${allDestinations ? `<section class="event__section  event__section--destination">
+     ${destination.description ? `<section class="event__section  event__section--destination">
      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-     <p class="event__destination-description">${allDestinations.destinations.map((element) => element).join(' ')}</p>
+     <p class="event__destination-description">${destination.description}</p>
 
      <div class="event__photos-container">
        <div class="event__photos-tape">
-       ${allDestinations.photos.map((element) => `<img class="event__photo" src="img/photos/${element}.jpg" alt="Event photo">`).join('')}
+       ${destination.pictures.map((element) => `<img class="event__photo" src="${element.src}" alt="${element.description}">`).join('')}
        </div>
      </div>
    </section>` : ''}
@@ -213,15 +224,13 @@ export default class EditForm extends Smart {
   _titleInputHandler(evt) {
     evt.preventDefault();
     const evtValue = evt.target.value;
-    const findCity = this._cities.find((it) => it.title === evtValue);
-    const destination = findCity ? findCity : { title: evtValue };
-    const isRender = !this._cities.some((it) => it.title === evtValue);
+    const findCity = this._cities.find((it) => it.name === evtValue);
+    const destination = findCity ? findCity : { name: evtValue };
+    const isRender = !this._cities.some((it) => it.name === evtValue);
     this.updateData({
-      title: evtValue, destinations: destination.destinations,
-      photos: destination.photos,
+      destination,
     }, isRender);
-
-    if (this._cities.some((it) => it.title === evtValue)) {
+    if (this._cities.some((it) => it.name === evtValue)) {
       this.getElement().querySelector('.event__save-btn').disabled = false;
     } else {
       this.getElement().querySelector('.event__save-btn').disabled = true;
@@ -236,7 +245,7 @@ export default class EditForm extends Smart {
   _offerChekedHandler() {
     const checkedTitles = Array.from(this.getElement().querySelectorAll('.event__offer-checkbox'))
       .filter((element) => element.checked).map((it) => it.value);
-    const offers = findOffer(this._datalist, this._types).filter((offer) => checkedTitles.includes(offer.id));
+    const offers = findOffer(this._datalist, this._types).filter((offer) => checkedTitles.includes(offer.title));
     this.updateData({ offers: offers }, true);
   }
 
@@ -277,11 +286,18 @@ export default class EditForm extends Smart {
   static parseWaypointToData(waypoint) {
     return {
       ...waypoint,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 
   static parseDataToWaypoint(data) {
     data = { ...data };
+
+    delete data.isDisabled;
+    delete data.isSaving;
+    delete data.isDeleting;
 
     return data;
   }
@@ -289,9 +305,12 @@ export default class EditForm extends Smart {
   removeElement() {
     super.removeElement();
 
-    if (this._pickerStart) {
-      this._datePicker.destroy();
-      this._datePicker = null;
-    }
+    Object.values(this._datePicker)
+      .forEach((oneDatepicker) => {
+        if (oneDatepicker) {
+          oneDatepicker.destroy();
+          oneDatepicker = null;
+        }
+      });
   }
 }

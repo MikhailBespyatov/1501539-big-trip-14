@@ -1,9 +1,9 @@
 import FilterView from '../view/filter.js';
 import { remove, render, RenderPosition } from '../util/render.js';
-import { UPDATE_TYPE } from '../mock/constant.js';
+import { UPDATE_TYPE } from '../constant.js';
 
 export default class Filter {
-  constructor(filterContainer, filterModel, pointModel) {
+  constructor(filterContainer, pointModel, filterModel) {
     this._filterContainer = filterContainer;
     this._filterComponent = null;
     this._filterModel = filterModel;

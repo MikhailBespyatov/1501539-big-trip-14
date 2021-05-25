@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { getRandomIndex, getRandomInteger } from './common.js';
-import { ROUTE_POINT_TYPES, TITLES } from '../mock/constant.js';
+import { ROUTE_POINT_TYPES, TITLES } from '../constant.js';
 
 export const generatePointType = () => {
   return ROUTE_POINT_TYPES[getRandomIndex(ROUTE_POINT_TYPES)];

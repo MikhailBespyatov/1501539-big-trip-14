@@ -8,6 +8,15 @@ export const sumBasePrice = (array) => {
   return sum;
 };
 
+export const sumOffersPrice = (array) => {
+  let sum = 0;
+  array.map((element) => {
+    element.offers.map((offer) => sum = sum + offer.price);
+  });
+
+  return sum;
+};
+
 export const sumArray = (array) => {
   let sum = 0;
   array.map((element) => {
@@ -50,12 +59,13 @@ export const getRandomIndex = (array) => {
 export const msToTime = (duration) => {
   let minutes = parseInt((duration / (1000 * 60)) % 60);
   let hours = parseInt((duration / (1000 * 60 * 60)) % 24);
-  const days = parseInt(duration / (1000 * 60 * 60 * 24)) + 'D';
+  let days = parseInt(duration / (1000 * 60 * 60 * 24));
 
   hours = (hours < 10) ? '0' + hours : hours;
   minutes = (minutes < 10) ? '0' + minutes : minutes;
+  days = (days < 10) ? '0' + days : days;
 
-  return `${days === '0D' ? '' : days} ${hours}:${minutes}`;
+  return `${days < 1 ? '' : days + 'D'} ${hours < 1 ? '' : hours + 'H'} ${minutes + 'M'}`;
 };
 
 export const sortDateUp = (a, b) => {
@@ -106,4 +116,8 @@ export const getDateWaypoint = (date) => {
 
 export const getDate = (date) => {
   return dayjs(date).format('MMMM D');
+};
+
+export const getMounth = (date) => {
+  return dayjs(date).format('MMM');
 };

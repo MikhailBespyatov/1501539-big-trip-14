@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { SITE_MENU } from '../mock/constant.js';
+import { SITE_MENU } from '../constant.js';
 
 const createSiteMenuTemplate = () => {
   return `<nav class="trip-controls__trip-tabs  trip-tabs">

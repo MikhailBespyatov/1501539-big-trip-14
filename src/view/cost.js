@@ -1,20 +1,21 @@
-import { sumBasePrice } from '../util/common.js';
+import { sumBasePrice, sumOffersPrice } from '../util/common.js';
 import AbstractView from './abstract.js';
 
-const createCostTemplate = (basePrice) => {
-  const fullPrice = sumBasePrice(basePrice);
+const createCostTemplate = (points) => {
+  const basePrice = sumBasePrice(points);
+  const offersPrice = sumOffersPrice(points);
   return `<p class="trip-info__cost">
-  Total: &euro;&nbsp;<span class="trip-info__cost-value">${fullPrice}</span>
+  Total: &euro;&nbsp;<span class="trip-info__cost-value">${basePrice + offersPrice}</span>
 </p>`;
 };
 
 export default class Cost extends AbstractView {
-  constructor(basePrice) {
+  constructor(points) {
     super();
-    this._basePrice = basePrice;
+    this._points = points;
   }
 
   getTemplate() {
-    return createCostTemplate(this._basePrice);
+    return createCostTemplate(this._points);
   }
 }

@@ -1,4 +1,4 @@
-const ROUTE_POINT_TYPES = [
+export const ROUTE_POINT_TYPES = [
   'Taxi',
   'Bus',
   'Train',
@@ -11,41 +11,35 @@ const ROUTE_POINT_TYPES = [
   'Restaurant',
 ];
 
-const TITLES = [
+export const TITLES = [
   'Amsterdam',
   'Chamonix',
   'Geneva',
 ];
 
-const OFFERS = [
-  {
-    id: 'luggage',
-    title: 'Add luggage',
-    price: 30,
-  },
-  {
-    id: 'comfort',
-    title: 'Switch to comfort class',
-    price: 100,
-  },
-  {
-    id: 'meal',
-    title:'Add meal',
-    price: 15,
-  },
-  {
-    id: 'seats',
-    title:'Choose seats',
-    price: 5,
-  },
-  {
-    id: 'train',
-    title:'Travel by train',
-    price: 40,
-  },
+export const OFFERS = [{
+  title: 'Add luggage',
+  price: 30,
+},
+{
+  title: 'Switch to comfort class',
+  price: 100,
+},
+{
+  title: 'Add meal',
+  price: 15,
+},
+{
+  title: 'Choose seats',
+  price: 5,
+},
+{
+  title: 'Travel by train',
+  price: 40,
+},
 ];
 
-const DESTINATION_DESCRIPTIONS = [
+export const DESTINATION_DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
   'Fusce tristique felis at fermentum pharetra.',
@@ -58,41 +52,42 @@ const DESTINATION_DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-const PHOTOS = [1, 2, 3, 4, 5];
+export const PHOTOS = [1, 2, 3, 4, 5];
 
-const SORT_TYPE = {
+export const SORT_TYPE = {
   DEFAULT: 'default',
   DAY: 'day',
   TIME: 'time',
   PRICE: 'price',
 };
 
-const USER_ACTION = {
+export const USER_ACTION = {
   UPDATE_POINT: 'UPDATE_TASK',
   ADD_POINT: 'ADD_POINT',
   DELETE_POINT: 'DELETE_POINT',
 };
 
-const UPDATE_TYPE = {
+export const UPDATE_TYPE = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
-const FILTER_TYPE = {
+export const FILTER_TYPE = {
   EVERYTHING: 'EVERYTHING',
   FUTURE: 'FUTURE',
   PAST: 'PAST',
   NONE: 'NONE',
 };
 
-const SITE_MENU = {
+export const SITE_MENU = {
   TABLE: 'TABLE',
   STATS: 'STATS',
   NEW: 'NEW',
 };
 
-const typeToEmoji = {
+export const typeToEmoji = {
   'TAXI': '🚕',
   'BUS': '🚌',
   'TRAIN': '🚂',
@@ -105,5 +100,8 @@ const typeToEmoji = {
   'RESTAURANT': '🍴',
 };
 
-export { ROUTE_POINT_TYPES, TITLES, OFFERS, DESTINATION_DESCRIPTIONS,
-  PHOTOS, SORT_TYPE, USER_ACTION, UPDATE_TYPE, FILTER_TYPE, SITE_MENU, typeToEmoji };
+export const STATE = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ERROR: 'ERROR',
+};

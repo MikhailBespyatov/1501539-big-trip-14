@@ -2,7 +2,7 @@ import SmartView from './smart-abstract.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getDiffTime } from '../util/common.js';
-import { typeToEmoji } from '../mock/constant.js';
+import { typeToEmoji } from '../constant.js';
 
 const BAR_HEIGHT = 55;
 

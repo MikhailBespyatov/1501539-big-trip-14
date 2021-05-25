@@ -1,8 +1,7 @@
 import EditFormView from '../view/edit-form.js';
 import WaypointView from '../view/waypoint.js';
 import { render, RenderPosition, replace, remove } from '../util/render.js';
-import { types, cities } from '../mock/generate-waypoint.js';
-import { USER_ACTION, UPDATE_TYPE } from '../mock/constant.js';
+import { USER_ACTION, UPDATE_TYPE, STATE } from '../constant.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -10,10 +9,13 @@ const Mode = {
 };
 
 export default class Waypoint {
-  constructor(waypointContainer, changeData, changeMode) {
+  constructor(waypointContainer, changeData, changeMode, offersModel, destinationModel) {
     this._waypointContainer = waypointContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+
+    this._types = offersModel.getOffers();
+    this._cities = destinationModel.getDestinations();
 
     this._waypointComponent = null;
     this._waypointEditComponent = null;
@@ -30,8 +32,7 @@ export default class Waypoint {
 
   init(waypoint) {
     this._waypoint = waypoint;
-    this._types = types;
-    this._cities = cities;
+
 
     const prevWaypointComponent = this._waypointComponent;
     const prevWaypointEditComponent = this._waypointEditComponent;
@@ -102,14 +103,13 @@ export default class Waypoint {
 
   _formSubmitHandler(update) {
     const isMinorUpdate = (this._waypoint.date !== update.date)
-    || (this._waypoint.basePrice !== update.basePrice)
-    || (this._waypoint.diffTime !== update.diffTime);
+      || (this._waypoint.basePrice !== update.basePrice)
+      || (this._waypoint.diffTime !== update.diffTime);
 
     this._changeData(
       USER_ACTION.UPDATE_POINT,
       isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
-      {...update});
-    this._replaceEditToItem();
+      { ...update });
   }
 
   _editRollupClickHandler() {
@@ -128,7 +128,36 @@ export default class Waypoint {
     this._changeData(
       USER_ACTION.DELETE_POINT,
       UPDATE_TYPE.MAJOR,
-      {...this._waypoint},
+      { ...this._waypoint },
     );
+  }
+
+  setViewState(state) {
+    const resetFormState = () => {
+      this._waypointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case STATE.SAVING:
+        this._waypointEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case STATE.DELETING:
+        this._waypointEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case STATE.ERROR:
+        this._waypointEditComponent.shake(resetFormState());
+        this._waypointComponent.shake(resetFormState);
+        break;
+    }
   }
 }

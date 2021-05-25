@@ -1,4 +1,4 @@
-import { FILTER_TYPE } from '../mock/constant.js';
+import { FILTER_TYPE } from '../constant.js';
 import { isPast, isFuture } from '../util/waypoint.js';
 
 export const filter = {

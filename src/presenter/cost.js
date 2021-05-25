@@ -22,7 +22,7 @@ export default class Cost {
     const prevCostComponent = this._costComponent;
     this._costComponent = new CostView(filteredPoints);
 
-    if (prevCostComponent === 0) {
+    if (prevCostComponent === null) {
       render(this._costContainer, this._costComponent, RenderPosition.BEFOREEND);
       return;
     }

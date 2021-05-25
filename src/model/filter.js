@@ -1,5 +1,5 @@
 import Observer from '../util/observer.js';
-import { FILTER_TYPE } from '../mock/constant.js';
+import { FILTER_TYPE } from '../constant.js';
 
 export default class Filter extends Observer {
   constructor() {
