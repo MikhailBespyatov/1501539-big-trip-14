@@ -1,9 +1,9 @@
 import FilterView from '../view/filter.js';
 import { remove, render, RenderPosition } from '../util/render.js';
-import { UPDATE_TYPE } from '../mock/constant.js';
+import { UpdateType } from '../constant.js';
 
 export default class Filter {
-  constructor(filterContainer, filterModel, pointModel) {
+  constructor(filterContainer, pointModel, filterModel) {
     this._filterContainer = filterContainer;
     this._filterComponent = null;
     this._filterModel = filterModel;
@@ -17,7 +17,7 @@ export default class Filter {
     this._filterModel.addObserver(this._handleFilterModel);
     this._pointModel.addObserver(this._handleFilterModel);
     const prevFilterComponent = this._filterComponent;
-    this._filterComponent = new FilterView(this._filterModel.getFilter());
+    this._filterComponent = new FilterView(this._filterModel.getFilter(), this._pointModel);
 
     this._filterComponent.setFilterTypeCheckHandler(this._filterTypeCheckHandler);
 
@@ -39,7 +39,7 @@ export default class Filter {
       return;
     }
 
-    this._filterModel.setFilter(UPDATE_TYPE.MAJOR, filterType);
+    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 
   destroy() {

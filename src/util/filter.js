@@ -1,8 +1,20 @@
-import { FILTER_TYPE } from '../mock/constant.js';
-import { isPast, isFuture } from '../util/waypoint.js';
+import { FilterType } from '../constant.js';
+import dayjs from 'dayjs';
+
+const isPast = (day) => {
+  return dayjs().isAfter(day, 'd');
+};
+
+const isFuture = (day) => {
+  return dayjs().isBefore(day, 'd');
+};
+
+const isToday = (date) => {
+  return (new Date().getDate() === new Date(date).getDate());
+};
 
 export const filter = {
-  [FILTER_TYPE.EVERYTHING]: (waypoints) => waypoints,
-  [FILTER_TYPE.FUTURE]: (waypoints) => waypoints.filter((waypoint) => isFuture(waypoint.dateStart)),
-  [FILTER_TYPE.PAST]: (waypoints) => waypoints.filter((waypoint) => isPast(waypoint.dateEnd)),
+  [FilterType.EVERYTHING]: (waypoints) => waypoints,
+  [FilterType.FUTURE]: (waypoints) => waypoints.filter((waypoint) => (isFuture(waypoint.dateEnd)) || isToday(waypoint.dateStart)),
+  [FilterType.PAST]: (waypoints) => waypoints.filter((waypoint) => isPast(waypoint.dateStart)),
 };

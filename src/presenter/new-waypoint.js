@@ -1,17 +1,15 @@
 import EditFormView from '../view/edit-form.js';
 import { render, RenderPosition, remove } from '../util/render.js';
-import { nanoid } from 'nanoid';
-import { USER_ACTION, UPDATE_TYPE } from '../mock/constant.js';
-import { types, cities } from '../mock/generate-waypoint.js';
+import { UserAction, UpdateType } from '../constant.js';
 
 
 export default class NewWaypoint {
-  constructor(container, changeData, filterModel) {
+  constructor(container, changeData, filterModel, types, cities) {
     this._container = container,
     this._changeData = changeData,
     this._waypointEditComponent = null;
-    this._types = types;
-    this._cities = cities;
+    this._types = types.getOffers();
+    this._cities = cities.getDestinations();
     this._filterModel = filterModel;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -36,12 +34,30 @@ export default class NewWaypoint {
     document.addEventListener('keydown', this._onEscKeydown);
   }
 
+  setSaving() {
+    this._waypointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setError() {
+    const resetFormState = () => {
+      this._waypointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._waypointEditComponent.shake(resetFormState);
+  }
+
   _formSubmitHandler(update) {
     this._changeData(
-      USER_ACTION.ADD_POINT,
-      UPDATE_TYPE.MINOR,
-      { ...update, id: nanoid() });
-    this.destroy();
+      UserAction.ADD_POINT,
+      UpdateType.MINOR,
+      { ...update });
   }
 
   _canselClickHandler() {
