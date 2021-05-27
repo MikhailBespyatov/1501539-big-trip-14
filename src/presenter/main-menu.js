@@ -1,5 +1,5 @@
 import { render, RenderPosition, remove } from '../util/render.js';
-import { SITE_MENU, UPDATE_TYPE, FILTER_TYPE } from '../constant.js';
+import { SiteMenu, UpdateType, FilterType } from '../constant.js';
 import FilterPresenter from './filter.js';
 import WaybillPresenter from './waybill.js';
 import SiteMenuView from '../view/site-menu.js';
@@ -57,32 +57,32 @@ export default class MainMenu {
 
   _mainMenuClickHandler(menuItem) {
     switch (menuItem) {
-      case SITE_MENU.STATS:
-        if (!this._siteMenuComponent.checkActiveState(SITE_MENU.STATS)) {
+      case SiteMenu.STATS:
+        if (!this._siteMenuComponent.checkActiveState(SiteMenu.STATS)) {
           this._waybillPresenter.destroy();
-          this._siteMenuComponent.setActiveState(SITE_MENU.STATS);
-          this._siteMenuComponent.removeActiveState(SITE_MENU.TABLE);
+          this._siteMenuComponent.setActiveState(SiteMenu.STATS);
+          this._siteMenuComponent.removeActiveState(SiteMenu.TABLE);
           this._statsComponent = new StatsView(this._pointModel);
           render(this._statsContainer, this._statsComponent, RenderPosition.BEFOREEND);
         }
         break;
-      case SITE_MENU.TABLE:
-        if (!this._siteMenuComponent.checkActiveState(SITE_MENU.TABLE)) {
+      case SiteMenu.TABLE:
+        if (!this._siteMenuComponent.checkActiveState(SiteMenu.TABLE)) {
           remove(this._statsComponent);
-          this._filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING);
+          this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
           this._waybillPresenter.destroy();
           this._waybillPresenter.init();
-          this._siteMenuComponent.setActiveState(SITE_MENU.TABLE);
-          this._siteMenuComponent.removeActiveState(SITE_MENU.STATS);
+          this._siteMenuComponent.setActiveState(SiteMenu.TABLE);
+          this._siteMenuComponent.removeActiveState(SiteMenu.STATS);
         }
         break;
-      case SITE_MENU.NEW:
-        if (!this._siteMenuComponent.checkActiveState(SITE_MENU.TABLE)) {
-          this._siteMenuComponent.removeActiveState(SITE_MENU.STATS);
+      case SiteMenu.NEW:
+        if (!this._siteMenuComponent.checkActiveState(SiteMenu.TABLE)) {
+          this._siteMenuComponent.removeActiveState(SiteMenu.STATS);
           remove(this._statsComponent);
-          this._siteMenuComponent.setActiveState(SITE_MENU.TABLE);
+          this._siteMenuComponent.setActiveState(SiteMenu.TABLE);
         }
-        this._filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING);
+        this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
         this._waybillPresenter.createNewWaypoint();
         this._newButtonComponent.setDisabled(true);
     }

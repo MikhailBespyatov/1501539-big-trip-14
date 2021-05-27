@@ -14,7 +14,8 @@ const createRouteTemplate = (points) => {
 
 
   return `<div class="trip-info__main">
-    <h1 class="trip-info__title">${firstTitle} ${points.length > 2 ? `&mdash; ${middleTitle}`  : ''} ${points.length > 1 ? `&mdash; ${lastTitle}` : ''}</h1>
+    <h1 class="trip-info__title">${firstTitle} ${points.length > 3 ? '&mdash; ...'  : points.length === 3 ? `&mdash; ${middleTitle}` : ''}
+    &mdash; ${lastTitle}</h1>
     <p class="trip-info__dates">${monthStart} ${firstDate}&nbsp;&mdash;&nbsp;${monthEnd} ${lastDate}</p>
   </div>`;
 };

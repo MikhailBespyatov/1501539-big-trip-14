@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import Smart from './smart-abstract.js';
 import { ucFirst, getDateFormFormat } from '../util/common.js';
 import flatpickr from 'flatpickr';
+import { TRANSPORT } from '../constant.js';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -75,7 +76,7 @@ const createEditFormTemplate = (types, destinations, datalist = blanc) => {
 
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-        ${type}
+        ${type} ${TRANSPORT.includes(type) ? 'to' : 'in'}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination.name)}" list="destination-list-1">
         <datalist id="destination-list-1">

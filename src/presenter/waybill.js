@@ -3,9 +3,9 @@ import SortView from '../view/sort.js';
 import NoWaypointView from '../view/no-waypoint.js';
 import WaypointPresenter from './waypoint.js';
 import NewWaypointPresenter from './new-waypoint.js';
-import { sortDateUp, sortPriceUp, sortTimeUp } from '../util/common.js';
+import { sortDateUp, sortTimeDown, sortPriceDown } from '../util/common.js';
 import { render, RenderPosition, remove } from '../util/render.js';
-import { SORT_TYPE, USER_ACTION, UPDATE_TYPE, STATE } from '../constant.js';
+import { SortType, UserAction, UpdateType, State } from '../constant.js';
 import { filter } from '../util/filter.js';
 import LoadingView from '../view/loading.js';
 import NewButtonView from '../view/new-button.js';
@@ -24,7 +24,7 @@ export default class Waybill {
     this._offerModel = offerModel;
     this._destinationModel = destinationModel;
 
-    this._currentSortType = SORT_TYPE.DAY;
+    this._currentSortType = SortType.DAY;
 
     this._sortComponent = null;
     this._mainEventListComponent = new MainEventListView();
@@ -64,16 +64,16 @@ export default class Waybill {
 
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
-      case USER_ACTION.UPDATE_POINT:
-        this._waypointPresenter[update.id].setViewState(STATE.SAVING);
+      case UserAction.UPDATE_POINT:
+        this._waypointPresenter[update.id].setViewState(State.SAVING);
         this._api.updatePoint(update).then((response) => {
           this._pointModel.updatePoint(updateType, response);
           this._waypointPresenter[update.id].resetView();
         }).catch(() => {
-          this._waypointPresenter[update.id].setViewState(STATE.ERROR);
+          this._waypointPresenter[update.id].setViewState(State.ERROR);
         });
         break;
-      case USER_ACTION.ADD_POINT:
+      case UserAction.ADD_POINT:
         this._newWaypointPresenter.setSaving();
         this._api.addPoint(update).then((response) => {
           this._pointModel.addPoint(updateType, response);
@@ -82,12 +82,12 @@ export default class Waybill {
           this._newWaypointPresenter.setError();
         });
         break;
-      case USER_ACTION.DELETE_POINT:
-        this._waypointPresenter[update.id].setViewState(STATE.DELETING);
+      case UserAction.DELETE_POINT:
+        this._waypointPresenter[update.id].setViewState(State.DELETING);
         this._api.deletePoint(update).then(() => {
           this._pointModel.deletePoint(updateType, update);
         }).catch(() => {
-          this._waypointPresenter[update.id].setViewState(STATE.ERROR);
+          this._waypointPresenter[update.id].setViewState(State.ERROR);
         });
         break;
     }
@@ -95,18 +95,18 @@ export default class Waybill {
 
   _handleModelEvent(updateType, data) {
     switch (updateType) {
-      case UPDATE_TYPE.PATCH:
+      case UpdateType.PATCH:
         this._waypointPresenter[data.id].init(data);
         break;
-      case UPDATE_TYPE.MINOR:
+      case UpdateType.MINOR:
         this._clearWaybill();
         this._renderWaybill();
         break;
-      case UPDATE_TYPE.MAJOR:
+      case UpdateType.MAJOR:
         this._clearWaybill(true);
         this._renderWaybill();
         break;
-      case UPDATE_TYPE.INIT:
+      case UpdateType.INIT:
         this._isLoading = false;
         remove(this._loadingComponent);
         this._clearWaybill();
@@ -121,12 +121,12 @@ export default class Waybill {
     const points = this._pointModel.getPoints();
     const filteredPoints = filter[filteredType](points);
     switch (this._currentSortType) {
-      case SORT_TYPE.DAY:
+      case SortType.DAY:
         return filteredPoints.sort(sortDateUp);
-      case SORT_TYPE.TIME:
-        return filteredPoints.sort(sortTimeUp);
-      case SORT_TYPE.PRICE:
-        return filteredPoints.sort(sortPriceUp);
+      case SortType.TIME:
+        return filteredPoints.sort(sortTimeDown);
+      case SortType.PRICE:
+        return filteredPoints.sort(sortPriceDown);
     }
 
     return filteredPoints;
@@ -191,7 +191,7 @@ export default class Waybill {
     remove(this._loadingComponent);
 
     if (resetSortType) {
-      this._currentSortType = SORT_TYPE.DAY;
+      this._currentSortType = SortType.DAY;
     }
   }
 

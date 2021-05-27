@@ -1,7 +1,7 @@
 import EditFormView from '../view/edit-form.js';
 import WaypointView from '../view/waypoint.js';
 import { render, RenderPosition, replace, remove } from '../util/render.js';
-import { USER_ACTION, UPDATE_TYPE, STATE } from '../constant.js';
+import { UserAction, UpdateType, State } from '../constant.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -107,8 +107,8 @@ export default class Waypoint {
       || (this._waypoint.diffTime !== update.diffTime);
 
     this._changeData(
-      USER_ACTION.UPDATE_POINT,
-      isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       { ...update });
   }
 
@@ -119,15 +119,15 @@ export default class Waypoint {
 
   _favoriteClickHandler() {
     this._changeData(
-      USER_ACTION.UPDATE_POINT,
-      UPDATE_TYPE.PATCH,
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
       { ...this._waypoint, isFavorite: !this._waypoint.isFavorite });
   }
 
   _deleteClickHandler() {
     this._changeData(
-      USER_ACTION.DELETE_POINT,
-      UPDATE_TYPE.MAJOR,
+      UserAction.DELETE_POINT,
+      UpdateType.MAJOR,
       { ...this._waypoint },
     );
   }
@@ -142,19 +142,19 @@ export default class Waypoint {
     };
 
     switch (state) {
-      case STATE.SAVING:
+      case State.SAVING:
         this._waypointEditComponent.updateData({
           isDisabled: true,
           isSaving: true,
         });
         break;
-      case STATE.DELETING:
+      case State.DELETING:
         this._waypointEditComponent.updateData({
           isDisabled: true,
           isDeleting: true,
         });
         break;
-      case STATE.ERROR:
+      case State.ERROR:
         this._waypointEditComponent.shake(resetFormState());
         this._waypointComponent.shake(resetFormState);
         break;

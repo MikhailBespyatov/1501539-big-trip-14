@@ -1,21 +1,29 @@
 import AbstractView from './abstract.js';
-import { FILTER_TYPE } from '../constant.js';
+import { FilterType } from '../constant.js';
+import { filter } from '../util/filter.js';
 
-const createFiltersTemplate = (currentFilterType) => {
+const filteredPoints = (filteredType, points) => {
+  return filter[filteredType](points);
+};
+
+const createFiltersTemplate = (currentFilterType, points) => {
   return `<form class="trip-filters" action="#" method="get">
   <div class="trip-filters__filter">
     <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio"
-    name="trip-filter" value="everything" data-filter-type="${FILTER_TYPE.EVERYTHING}" ${currentFilterType === FILTER_TYPE.EVERYTHING ? 'checked' : ''}>
+    name="trip-filter" value="everything" data-filter-type="${FilterType.EVERYTHING}" ${currentFilterType === FilterType.EVERYTHING ? 'checked' : ''}
+    ${filteredPoints(FilterType.EVERYTHING, points).length === 0 ? 'disabled' : ''}>
     <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
   </div>
   <div class="trip-filters__filter">
     <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio"
-    name="trip-filter" value="future" data-filter-type="${FILTER_TYPE.FUTURE}"  ${currentFilterType === FILTER_TYPE.FUTURE ? 'checked' : ''}>
+    name="trip-filter" value="future" data-filter-type="${FilterType.FUTURE}"  ${currentFilterType === FilterType.FUTURE ? 'checked' : ''}
+    ${filteredPoints(FilterType.FUTURE, points).length === 0 ? 'disabled' : ''}>
     <label class="trip-filters__filter-label" for="filter-future">Future</label>
   </div>
   <div class="trip-filters__filter">
     <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio"
-    name="trip-filter" value="past" data-filter-type="${FILTER_TYPE.PAST}"  ${currentFilterType === FILTER_TYPE.PAST ? 'checked' : ''}>
+    name="trip-filter" value="past" data-filter-type="${FilterType.PAST}"  ${currentFilterType === FilterType.PAST ? 'checked' : ''}
+    ${filteredPoints(FilterType.PAST, points).length === 0 ? 'disabled' : ''}>
     <label class="trip-filters__filter-label" for="filter-past">Past</label>
   </div>
   <button class="visually-hidden" type="submit">Accept filter</button>
@@ -23,14 +31,15 @@ const createFiltersTemplate = (currentFilterType) => {
 };
 
 export default class Filters extends AbstractView {
-  constructor(currentFilterType) {
+  constructor(currentFilterType, pointModel) {
     super();
     this._currentFilterType = currentFilterType;
     this._filterTypeCheckHandler = this._filterTypeCheckHandler.bind(this);
+    this._points = pointModel.getPoints();
   }
 
   getTemplate() {
-    return createFiltersTemplate(this._currentFilterType);
+    return createFiltersTemplate(this._currentFilterType, this._points);
   }
 
   _filterTypeCheckHandler(evt) {

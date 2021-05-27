@@ -2,7 +2,7 @@ import SmartView from './smart-abstract.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getDiffTime } from '../util/common.js';
-import { typeToEmoji } from '../constant.js';
+import { TypeToEmoji } from '../constant.js';
 
 const BAR_HEIGHT = 55;
 
@@ -52,7 +52,7 @@ const renderChart = (chartCtx, chartType, points) => {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: sortedData.map((data) => `${typeToEmoji[data[0]]} ${data[0]}`),
+      labels: sortedData.map((data) => `${TypeToEmoji[data[0]]} ${data[0]}`),
       datasets: [{
         data: sortedData.map((data) => data[1].number),
         backgroundColor: '#ffffff',

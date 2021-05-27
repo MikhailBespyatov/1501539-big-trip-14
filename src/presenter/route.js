@@ -40,5 +40,4 @@ export default class Route {
   _handleRouteModel() {
     this.init();
   }
-
 }

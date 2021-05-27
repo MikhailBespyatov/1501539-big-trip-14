@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'big-trip';
-const CACHE_VER = 'N1';
+const CACHE_VER = 'N2';
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VER}`;
 
 const HTTP_STATUS_OK = 200;
@@ -55,7 +55,8 @@ self.addEventListener('activate', (evt) => {
               }
 
               return null;
-            }).filter((key) => key !== null),
+            })
+            .filter((key) => key !== null),
         ),
       ),
   );
@@ -81,8 +82,9 @@ const handleFetch = (evt) => {
 
             caches.open(CACHE_NAME)
               .then((cache) => cache.put(request, clonedResponse));
-          })
 
+            return response;
+          });
       }),
   );
 };

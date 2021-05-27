@@ -1,6 +1,7 @@
 import AbstractView from './abstract.js';
 import he from 'he';
 import { msToTime, getDateWaypoint, getDate, getDiffTime } from '../util/common.js';
+import { TRANSPORT } from '../constant.js';
 
 const createWaypointTemplate = (object) => {
   const { type, destination, dateStart, dateEnd, basePrice, offers, isFavorite } = object;
@@ -11,7 +12,7 @@ const createWaypointTemplate = (object) => {
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${type} ${he.encode(destination.name)}</h3>
+    <h3 class="event__title">${type} ${TRANSPORT.includes(type) ? 'to' : 'in'} ${he.encode(destination.name)}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="${dateStart}">${getDateWaypoint(dateStart)}</time>

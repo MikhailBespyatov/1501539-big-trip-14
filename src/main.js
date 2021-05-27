@@ -8,7 +8,7 @@ import Api from './api/api.js';
 import OffersModel from './model/offers.js';
 import DestinationsModel from './model/destinations.js';
 import FilterPresenter from './presenter/filter.js';
-import { UPDATE_TYPE } from './constant.js';
+import { UpdateType } from './constant.js';
 import RoutePresenter from './presenter/route.js';
 import Provider from './api/provider.js';
 import Store from './api/store.js';
@@ -59,12 +59,12 @@ Promise.all([
   const [points, destinations, offers] = values;
   destinationsModel.setDestinations(destinations);
   offersModel.setOffers(offers);
-  pointModel.setPoints(UPDATE_TYPE.INIT, points);
+  pointModel.setPoints(UpdateType.INIT, points);
 
   filterPresenter.init();
   mainMenuPresenter.setNewButtonDisabledMode(false);
 }).catch(() => {
-  pointModel.setPoints(UPDATE_TYPE.INIT, []);
+  pointModel.setPoints(UpdateType.INIT, []);
   mainMenuPresenter.setNewButtonDisabledMode(false);
 });
 

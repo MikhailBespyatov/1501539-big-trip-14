@@ -1,8 +1,8 @@
 import AbstractView from './abstract';
-import { SITE_MENU } from '../constant.js';
+import { SiteMenu } from '../constant.js';
 
 const createNewButtonTemplate = () => {
-  return `<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button" data-menu=${SITE_MENU.NEW}>New event</button>`;
+  return `<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button" data-menu=${SiteMenu.NEW}>New event</button>`;
 };
 
 export default class NewButton extends AbstractView {

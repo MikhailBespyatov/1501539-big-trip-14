@@ -1,6 +1,6 @@
 import EditFormView from '../view/edit-form.js';
 import { render, RenderPosition, remove } from '../util/render.js';
-import { USER_ACTION, UPDATE_TYPE } from '../constant.js';
+import { UserAction, UpdateType } from '../constant.js';
 
 
 export default class NewWaypoint {
@@ -55,8 +55,8 @@ export default class NewWaypoint {
 
   _formSubmitHandler(update) {
     this._changeData(
-      USER_ACTION.ADD_POINT,
-      UPDATE_TYPE.MINOR,
+      UserAction.ADD_POINT,
+      UpdateType.MINOR,
       { ...update });
   }
 
