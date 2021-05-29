@@ -1,4 +1,4 @@
-export const ROUTE_POINT_TYPES = [
+const ROUTE_POINT_TYPES = [
   'Taxi',
   'Bus',
   'Train',
@@ -11,7 +11,7 @@ export const ROUTE_POINT_TYPES = [
   'Restaurant',
 ];
 
-export const TRANSPORT = [
+const TRANSPORT_TYPES = [
   'taxi',
   'bus',
   'train',
@@ -21,40 +21,40 @@ export const TRANSPORT = [
   'flight',
 ];
 
-export const SortType = {
+const SortType = {
   DEFAULT: 'default',
   DAY: 'day',
   TIME: 'time',
   PRICE: 'price',
 };
 
-export const UserAction = {
+const UserAction = {
   UPDATE_POINT: 'UPDATE_TASK',
   ADD_POINT: 'ADD_POINT',
   DELETE_POINT: 'DELETE_POINT',
 };
 
-export const UpdateType = {
+const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
 };
 
-export const FilterType = {
+const FilterType = {
   EVERYTHING: 'EVERYTHING',
   FUTURE: 'FUTURE',
   PAST: 'PAST',
   NONE: 'NONE',
 };
 
-export const SiteMenu = {
+const SiteMenu = {
   TABLE: 'TABLE',
   STATS: 'STATS',
   NEW: 'NEW',
 };
 
-export const TypeToEmoji = {
+const TypeToEmoji = {
   'TAXI': '🚕',
   'BUS': '🚌',
   'TRAIN': '🚂',
@@ -67,8 +67,13 @@ export const TypeToEmoji = {
   'RESTAURANT': '🍴',
 };
 
-export const State = {
+const State = {
   SAVING: 'SAVING',
   DELETING: 'DELETING',
   ERROR: 'ERROR',
+};
+
+export {
+  ROUTE_POINT_TYPES, TRANSPORT_TYPES, SortType, UserAction, UpdateType, FilterType,
+  SiteMenu, TypeToEmoji, State
 };

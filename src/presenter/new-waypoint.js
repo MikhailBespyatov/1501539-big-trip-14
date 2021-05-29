@@ -34,24 +34,6 @@ export default class NewWaypoint {
     document.addEventListener('keydown', this._onEscKeydown);
   }
 
-  setSaving() {
-    this._waypointEditComponent.updateData({
-      isDisabled: true,
-      isSaving: true,
-    });
-  }
-
-  setError() {
-    const resetFormState = () => {
-      this._waypointEditComponent.updateData({
-        isDisabled: false,
-        isSaving: false,
-        isDeleting: false,
-      });
-    };
-
-    this._waypointEditComponent.shake(resetFormState);
-  }
 
   _formSubmitHandler(update) {
     this._changeData(
@@ -75,6 +57,10 @@ export default class NewWaypoint {
     }
   }
 
+  _handleNewAction() {
+    this.destroy();
+  }
+
   destroy() {
     if (this._waypointEditComponent === null) {
       return;
@@ -85,7 +71,22 @@ export default class NewWaypoint {
     document.querySelector('.trip-main__event-add-btn').disabled = false;
   }
 
-  _handleNewAction() {
-    this.destroy();
+  setSaving() {
+    this._waypointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setError() {
+    const resetFormState = () => {
+      this._waypointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._waypointEditComponent.shake(resetFormState);
   }
 }

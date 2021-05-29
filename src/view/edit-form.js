@@ -1,9 +1,9 @@
 import he from 'he';
 import dayjs from 'dayjs';
 import Smart from './smart-abstract.js';
-import { ucFirst, getDateFormFormat } from '../util/common.js';
+import { capitalizeFirstLetter, getDateFormFormat } from '../util/common.js';
 import flatpickr from 'flatpickr';
-import { TRANSPORT } from '../constant.js';
+import { TRANSPORT_TYPES } from '../constant.js';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -37,7 +37,7 @@ const createOfferTemplate = (desiredOffers, dataOffers) => {
 const createEventTypeItemTemplate = (types) => {
   return `<div class="event__type-item">
     <input id="event-type-${types.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${types.type}">
-    <label class="event__type-label  event__type-label--${types.type}" for="event-type-${types.type}-1">${ucFirst(types.type)}</label>
+    <label class="event__type-label  event__type-label--${types.type}" for="event-type-${types.type}-1">${capitalizeFirstLetter(types.type)}</label>
   </div>`;
 };
 
@@ -76,7 +76,7 @@ const createEditFormTemplate = (types, destinations, datalist = blanc) => {
 
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-        ${type} ${TRANSPORT.includes(type) ? 'to' : 'in'}
+        ${type} ${TRANSPORT_TYPES.includes(type) ? 'to' : 'in'}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination.name)}" list="destination-list-1">
         <datalist id="destination-list-1">
@@ -158,6 +158,18 @@ export default class EditForm extends Smart {
     return createEditFormTemplate(this._types, this._cities, this._datalist);
   }
 
+  removeElement() {
+    super.removeElement();
+
+    Object.values(this._datePicker)
+      .forEach((oneDatepicker) => {
+        if (oneDatepicker) {
+          oneDatepicker.destroy();
+          oneDatepicker = null;
+        }
+      });
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelectorAll('[name="event-type"]').
       forEach((element) => element.addEventListener('change', this._typeChangeHandler));
@@ -187,10 +199,10 @@ export default class EditForm extends Smart {
         {
           dateFormat: 'd/m/y H:i',
           enableTime: true,
-          defaultDate: this._datalist[`date${ucFirst(onePickKeys)}`],
+          defaultDate: this._datalist[`date${capitalizeFirstLetter(onePickKeys)}`],
           minDate: onePickKeys === 'end' ? this._datalist.dateStart : null,
           maxDate: onePickKeys === 'start' ? this._datalist.dateEnd : null,
-          onChange: (evt) => this._dateChangeHandler(evt, `date${ucFirst(onePickKeys)}`),
+          onChange: (evt) => this._dateChangeHandler(evt, `date${capitalizeFirstLetter(onePickKeys)}`),
         },
       );
     }
@@ -255,18 +267,6 @@ export default class EditForm extends Smart {
     this._callback.canselDeleteClick();
   }
 
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setRollupClickHandler(this._callback.rollupClick);
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this._setDatePicker();
-    this.setCanselDeleteClickHandler(this._callback.canselDeleteClick);
-  }
-
-  reset(waypoint) {
-    this.updateData(EditForm.parseWaypointToData(waypoint));
-  }
-
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
@@ -282,6 +282,18 @@ export default class EditForm extends Smart {
   setCanselDeleteClickHandler(callback) {
     this._callback.canselDeleteClick = callback;
     this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._deleteClickHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setRollupClickHandler(this._callback.rollupClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this._setDatePicker();
+    this.setCanselDeleteClickHandler(this._callback.canselDeleteClick);
+  }
+
+  reset(waypoint) {
+    this.updateData(EditForm.parseWaypointToData(waypoint));
   }
 
   static parseWaypointToData(waypoint) {
@@ -301,17 +313,5 @@ export default class EditForm extends Smart {
     delete data.isDeleting;
 
     return data;
-  }
-
-  removeElement() {
-    super.removeElement();
-
-    Object.values(this._datePicker)
-      .forEach((oneDatepicker) => {
-        if (oneDatepicker) {
-          oneDatepicker.destroy();
-          oneDatepicker = null;
-        }
-      });
   }
 }

@@ -63,17 +63,6 @@ export default class Waypoint {
     remove(prevWaypointEditComponent);
   }
 
-  destroy() {
-    remove(this._waypointComponent);
-    remove(this._waypointEditComponent);
-  }
-
-  resetView() {
-    if (this._mode !== Mode.DEFAULT) {
-      this._replaceEditToItem();
-    }
-  }
-
   _replaceItemToEdit() {
     replace(this._waypointEditComponent, this._waypointComponent);
     document.addEventListener('keydown', this._onEscKeydown);
@@ -160,4 +149,16 @@ export default class Waypoint {
         break;
     }
   }
+
+  destroy() {
+    remove(this._waypointComponent);
+    remove(this._waypointEditComponent);
+  }
+
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceEditToItem();
+    }
+  }
+
 }

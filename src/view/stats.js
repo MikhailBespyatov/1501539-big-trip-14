@@ -149,6 +149,16 @@ export default class Stats extends SmartView {
     return createStatsTemplate();
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this._moneyChart !== 0 || this._typeChart !== 0 || this._timeChart !== 0) {
+      this._moneyChart = null;
+      this._typeChart = null;
+      this._timeChart = null;
+    }
+  }
+
   _setCharts() {
     if (this._moneyChart !== null || this._typeChart !== null || this._timeChart !== 0) {
       this._moneyChart = null;
@@ -163,15 +173,5 @@ export default class Stats extends SmartView {
     this._moneyChart = renderChart(moneyCtx, CHART_TYPE.MONEY, this._data);
     this._typeChart = renderChart(typeCtx, CHART_TYPE.TYPE, this._data);
     this._timeChart = renderChart(timeCtx, CHART_TYPE.TIME, this._data);
-  }
-
-  removeElement() {
-    super.removeElement();
-
-    if (this._moneyChart !== 0 || this._typeChart !== 0 || this._timeChart !== 0) {
-      this._moneyChart = null;
-      this._typeChart = null;
-      this._timeChart = null;
-    }
   }
 }

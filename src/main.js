@@ -1,13 +1,12 @@
 import RouteAndConstContainerView from './view/route-and-cost-container.js';
 import { render, RenderPosition } from './util/render.js';
-import PointsModel from './model/point.js';
+import PointModel from './model/point.js';
 import FilterModel from './model/filter.js';
 import CostPresenter from './presenter/cost.js';
 import MainMenuPresenter from './presenter/main-menu.js';
 import Api from './api/api.js';
-import OffersModel from './model/offers.js';
-import DestinationsModel from './model/destinations.js';
-import FilterPresenter from './presenter/filter.js';
+import OffersModel from './model/offer.js';
+import DestinationModel from './model/destination.js';
 import { UpdateType } from './constant.js';
 import RoutePresenter from './presenter/route.js';
 import Provider from './api/provider.js';
@@ -26,26 +25,25 @@ const api = new Provider(apiBase, store);
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteHeaderMenuElement = siteHeaderElement.querySelector('.trip-controls__navigation');
-const siteHeaderConteiner = siteHeaderElement.querySelector('.trip-main');
+const siteHeaderContainerElement = siteHeaderElement.querySelector('.trip-main');
 const siteMainEventsElement = document.querySelector('.trip-events');
 const siteHeaderFiltersElement = siteHeaderElement.querySelector('.trip-controls__filters');
-const pageBodyContainer = document.querySelector('.page-body__page-main  .page-body__container');
+const pageBodyContainerElement = document.querySelector('.page-body__page-main  .page-body__container');
 
 
-const pointModel = new PointsModel();
+const pointModel = new PointModel();
 const filterModel = new FilterModel();
 const offersModel = new OffersModel();
-const destinationsModel = new DestinationsModel();
+const destinationsModel = new DestinationModel();
 
 const siteHeaderRouteAndCostElement = new RouteAndConstContainerView().getElement();
 
-render(siteHeaderConteiner, siteHeaderRouteAndCostElement, RenderPosition.AFTERBEGIN);
+render(siteHeaderContainerElement, siteHeaderRouteAndCostElement, RenderPosition.AFTERBEGIN);
 
 const costPresenter = new CostPresenter(siteHeaderRouteAndCostElement, pointModel, filterModel);
 const routePresenter = new RoutePresenter(siteHeaderRouteAndCostElement, pointModel, filterModel);
 const mainMenuPresenter = new MainMenuPresenter(siteHeaderFiltersElement, siteMainEventsElement, siteHeaderMenuElement,
-  pageBodyContainer, siteHeaderConteiner, pointModel, filterModel, offersModel, destinationsModel, api);
-const filterPresenter = new FilterPresenter(siteHeaderFiltersElement, pointModel, filterModel);
+  pageBodyContainerElement, siteHeaderContainerElement, pointModel, filterModel, offersModel, destinationsModel, api);
 
 costPresenter.init();
 routePresenter.init();
@@ -61,7 +59,6 @@ Promise.all([
   offersModel.setOffers(offers);
   pointModel.setPoints(UpdateType.INIT, points);
 
-  filterPresenter.init();
   mainMenuPresenter.setNewButtonDisabledMode(false);
 }).catch(() => {
   pointModel.setPoints(UpdateType.INIT, []);

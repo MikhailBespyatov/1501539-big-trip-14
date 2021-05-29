@@ -1,23 +1,23 @@
 import dayjs from 'dayjs';
 
-export const sumBasePrice = (array) => {
+const sumBasePrice = (points) => {
   let sum = 0;
-  array.map((element) => {
-    sum = sum + element.basePrice;
+  points.map((point) => {
+    sum = sum + point.basePrice;
   });
   return sum;
 };
 
-export const sumOffersPrice = (array) => {
+const sumOffersPrice = (points) => {
   let sum = 0;
-  array.map((element) => {
-    element.offers.map((offer) => sum = sum + offer.price);
+  points.map((point) => {
+    point.offers.map((offer) => sum = sum + offer.price);
   });
 
   return sum;
 };
 
-export const msToTime = (duration) => {
+const msToTime = (duration) => {
   let minutes = parseInt((duration / (1000 * 60)) % 60);
   let hours = parseInt((duration / (1000 * 60 * 60)) % 24);
   let days = parseInt(duration / (1000 * 60 * 60 * 24));
@@ -29,39 +29,39 @@ export const msToTime = (duration) => {
   return `${days < 1 ? '' : days + 'D'} ${hours < 1 ? '' : hours + 'H'} ${minutes + 'M'}`;
 };
 
-export const sortDateUp = (a, b) => {
+const sortDateUp = (a, b) => {
   const dateA = new Date(a.dateStart);
   const dateB = new Date(b.dateStart);
   return dateA - dateB;
 };
 
-export const sortDateDown = (a, b) => {
+const sortDateDown = (a, b) => {
   const dateA = new Date(a.dateStart);
   const dateB = new Date(b.dateStart);
   return dateB - dateA;
 };
 
-export const getDiffTime = (start, end) => {
+const getDiffTime = (start, end) => {
   return dayjs(end).diff(dayjs(start));
 };
 
-export const sortPriceUp = (a, b) => {
+const sortPriceUp = (a, b) => {
   return a.basePrice - b.basePrice;
 };
 
-export const sortPriceDown = (a, b) => {
+const sortPriceDown = (a, b) => {
   return b.basePrice - a.basePrice;
 };
 
-export const sortTimeUp = (a, b) => {
+const sortTimeUp = (a, b) => {
   return getDiffTime(a.dateStart, a.dateEnd) - getDiffTime(b.dateStart, b.dateEnd);
 };
 
-export const sortTimeDown = (a, b) => {
+const sortTimeDown = (a, b) => {
   return getDiffTime(b.dateStart, b.dateEnd) - getDiffTime(a.dateStart, a.dateEnd);
 };
 
-export const ucFirst = (str) => {
+const capitalizeFirstLetter = (str) => {
   if (!str) {
     return str;
   }
@@ -69,18 +69,24 @@ export const ucFirst = (str) => {
   return str[0].toUpperCase() + str.slice(1);
 };
 
-export const getDateFormFormat = (date) => {
+const getDateFormFormat = (date) => {
   return dayjs(date).format('DD/MM/YY HH:mm');
 };
 
-export const getDateWaypoint = (date) => {
+const getDateWaypoint = (date) => {
   return dayjs(date).format('HH:mm');
 };
 
-export const getDate = (date) => {
+const getDate = (date) => {
   return dayjs(date).format('MMMM D');
 };
 
-export const getMounth = (date) => {
+const getMounth = (date) => {
   return dayjs(date).format('MMM');
+};
+
+export {
+  sumBasePrice, sumOffersPrice, msToTime, sortDateUp, sortDateDown, getDiffTime, sortPriceUp,
+  sortPriceDown, sortTimeUp, sortTimeDown, capitalizeFirstLetter, getDateFormFormat, getDateWaypoint,
+  getDate, getMounth
 };

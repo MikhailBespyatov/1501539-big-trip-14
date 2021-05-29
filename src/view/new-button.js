@@ -16,10 +16,6 @@ export default class NewButton extends AbstractView {
     return createNewButtonTemplate();
   }
 
-  setDisabled(boolean) {
-    this.getElement().disabled = boolean;
-  }
-
   _clickHandler(evt) {
     evt.preventDefault();
     this._callback.clickHandler(evt.target.dataset.menu);
@@ -28,5 +24,9 @@ export default class NewButton extends AbstractView {
   setClickHandler(callback) {
     this._callback.clickHandler = callback;
     this.getElement().addEventListener('click', this._clickHandler);
+  }
+
+  setDisabled(boolean) {
+    this.getElement().disabled = boolean;
   }
 }

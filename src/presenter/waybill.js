@@ -46,22 +46,6 @@ export default class Waybill {
     this._renderWaybill();
   }
 
-  destroy() {
-    if (this._newWaypointPresenter !== null) {
-      this._newWaypointPresenter.destroy();
-    }
-    this._clearWaybill(true);
-    remove(this._mainEventListComponent);
-    this._pointModel.removeObserver(this._handleModelEvent);
-    this._filterModel.removeObserver(this._handleModelEvent);
-  }
-
-  createNewWaypoint() {
-    this._newWaypointPresenter = new NewWaypointPresenter(this._mainEventListComponent,
-      this._handleViewAction, this._filterModel, this._offerModel, this._destinationModel);
-    this._newWaypointPresenter.init();
-  }
-
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
@@ -209,5 +193,21 @@ export default class Waybill {
       this._renderSort();
       this._renderWaypointsList();
     }
+  }
+
+  destroy() {
+    if (this._newWaypointPresenter !== null) {
+      this._newWaypointPresenter.destroy();
+    }
+    this._clearWaybill(true);
+    remove(this._mainEventListComponent);
+    this._pointModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+  }
+
+  createNewWaypoint() {
+    this._newWaypointPresenter = new NewWaypointPresenter(this._mainEventListComponent,
+      this._handleViewAction, this._filterModel, this._offerModel, this._destinationModel);
+    this._newWaypointPresenter.init();
   }
 }

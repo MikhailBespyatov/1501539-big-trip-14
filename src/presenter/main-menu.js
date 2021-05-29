@@ -44,6 +44,7 @@ export default class MainMenu {
     render(this._newButtonContainer, this._newButtonComponent, RenderPosition.BEFOREEND);
 
     this.setNewButtonDisabledMode(true);
+    this._filterPresenter.init();
     this._waybillPresenter.init();
   }
 
@@ -51,15 +52,12 @@ export default class MainMenu {
     this.init();
   }
 
-  setNewButtonDisabledMode(boolean) {
-    this._newButtonComponent.setDisabled(boolean);
-  }
-
   _mainMenuClickHandler(menuItem) {
     switch (menuItem) {
       case SiteMenu.STATS:
         if (!this._siteMenuComponent.checkActiveState(SiteMenu.STATS)) {
           this._waybillPresenter.destroy();
+          this._filterPresenter.destroy();
           this._siteMenuComponent.setActiveState(SiteMenu.STATS);
           this._siteMenuComponent.removeActiveState(SiteMenu.TABLE);
           this._statsComponent = new StatsView(this._pointModel);
@@ -86,5 +84,9 @@ export default class MainMenu {
         this._waybillPresenter.createNewWaypoint();
         this._newButtonComponent.setDisabled(true);
     }
+  }
+
+  setNewButtonDisabledMode(boolean) {
+    this._newButtonComponent.setDisabled(boolean);
   }
 }

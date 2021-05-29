@@ -1,12 +1,12 @@
 import AbstractView from '../view/abstract.js';
 
-export const RenderPosition = {
+const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
 };
 
-export const render = (container, element, place) => {
-  if (container instanceof  AbstractView) {
+const render = (container, element, place) => {
+  if (container instanceof AbstractView) {
     container = container.getElement();
   }
 
@@ -24,7 +24,7 @@ export const render = (container, element, place) => {
   }
 };
 
-export const replace = (newChild, oldChild) => {
+const replace = (newChild, oldChild) => {
   if (newChild instanceof AbstractView) {
     newChild = newChild.getElement();
   }
@@ -42,14 +42,14 @@ export const replace = (newChild, oldChild) => {
   parent.replaceChild(newChild, oldChild);
 };
 
-export const createElement = (template) => {
+const createElement = (template) => {
   const newElement = document.createElement('div');
   newElement.innerHTML = template;
 
   return newElement.firstChild;
 };
 
-export const remove = (component) => {
+const remove = (component) => {
   if (component === null) {
     return;
   }
@@ -61,3 +61,5 @@ export const remove = (component) => {
   component.getElement().remove();
   component.removeElement();
 };
+
+export { RenderPosition, render, replace, createElement, remove };
